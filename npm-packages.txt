@@ -1,0 +1,2 @@
+npm install babel-loader @babel/core @babel/preset-env @babel/plugin-proposal-class-properties webpack  webpack-cli webpack-dev-server style-loader css-loader html-webpack-plugin browserlist prettier eslint eslint-config-prettier eslint-config-standard eslint-plugin-import --save-dev
+./node_modules/.bin/eslint --init
