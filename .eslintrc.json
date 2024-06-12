@@ -9,5 +9,14 @@
         "sourceType": "module"
     },
     "rules": {
-    }
+    },
+    "overrides": [
+        {
+          "files": ["tests/**/*"],
+          "env": {
+            "jest": true
+          }
+        }
+      ]
+  
 }
