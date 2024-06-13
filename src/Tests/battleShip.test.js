@@ -1,10 +1,10 @@
-export { battleShip } from '../Design/battleShip'
+import { battleShip } from '../Design/battleShip'
 
-desscribe('Test the isHit() function of the battleShip object',() =>{
+describe('Test the isHit() function of the battleShip object',() =>{
     test('battleShip should not be sunk on initialisation', () =>{
         const battleShip1 = battleShip(4)
 
-        expect(battleShip1.isSunk().toBe(false))
+        expect(battleShip1.isSunk()).toBe(false)
     })
 
     test('battleShip should not be sunk after enduring only 3 hits', () =>{
@@ -14,7 +14,7 @@ desscribe('Test the isHit() function of the battleShip object',() =>{
         battleShip1.receiveHit()
         battleShip1.receiveHit()
 
-        expect(battleShip1.isSunk().toBe(false))
+        expect(battleShip1.isSunk()).toBe(false)
     })
 
     test('battleShip be sunk after enduring 4 hits', () =>{
@@ -25,7 +25,7 @@ desscribe('Test the isHit() function of the battleShip object',() =>{
         battleShip1.receiveHit()
         battleShip1.receiveHit()
 
-        expect(battleShip1.isSunk().toBe(true))
+        expect(battleShip1.isSunk()).toBe(true)
     })
 
 })
