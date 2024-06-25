@@ -8,7 +8,7 @@ describe("Test the placement function of battleships", () => {
     const myBattleShip = battleShip(4);
 
     expect(myGameBoard.placeShip(myBattleShip, 1, "Vertical")).toBe(
-      "Valid result"
+      "Valid placement"
     );
   });
 
@@ -16,7 +16,7 @@ describe("Test the placement function of battleships", () => {
     const myDestroyer = battleShip(4);
 
     expect(myGameBoard.placeShip(myDestroyer, 80, "Vertical")).toBe(
-      "Invalid result"
+      "Invalid placement"
     );
   });
 
@@ -25,10 +25,10 @@ describe("Test the placement function of battleships", () => {
     const myCruiser = battleShip(3);
 
     expect(myGameBoard.placeShip(myDestroyer, 47, "Vertical")).toBe(
-      "Valid result"
+      "Valid placement"
     );
     expect(myGameBoard.placeShip(myCruiser, 48), "Vertical").toBe(
-      "Valid result"
+      "Invalid placement"
     );
   });
 });
