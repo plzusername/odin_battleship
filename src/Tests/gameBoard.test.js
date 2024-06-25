@@ -7,21 +7,29 @@ describe("Test the placement function of battleships", () => {
   test("should place battleship at designated coordinates", () => {
     const myBattleShip = battleShip(4);
 
-    expect(myGameBoard.placeShip(myBattleShip, 1)).toBe("Valid result");
+    expect(myGameBoard.placeShip(myBattleShip, 1, "Vertical")).toBe(
+      "Valid result"
+    );
   });
 
   test("should not place battleship at designated coordinates if the ship is placed partially outside the board", () => {
     const myDestroyer = battleShip(4);
 
-    expect(myGameBoard.placeShip(myDestroyer, 80)).toBe("Invalid result");
+    expect(myGameBoard.placeShip(myDestroyer, 80, "Vertical")).toBe(
+      "Invalid result"
+    );
   });
 
   test("should not place battleship at if it is in close proximity to another battleship", () => {
     const myDestroyer = battleShip(4);
     const myCruiser = battleShip(3);
 
-    expect(myGameBoard.placeShip(myDestroyer, 47)).toBe("Valid result");
-    expect(myGameBoard.placeShip(myCruiser, 48)).toBe("Valid result");
+    expect(myGameBoard.placeShip(myDestroyer, 47, "Vertical")).toBe(
+      "Valid result"
+    );
+    expect(myGameBoard.placeShip(myCruiser, 48), "Vertical").toBe(
+      "Valid result"
+    );
   });
 });
 
@@ -30,14 +38,14 @@ describe("Test gameboards registration and processing of hits ", () => {
 
   test("Should send hit function to targeted ship after successful hit", () => {
     const myBattleShip = battleShip(4);
-    myGameBoard.placeShip(myBattleShip, 6);
+    myGameBoard.placeShip(myBattleShip, 6, "Vertical");
 
     expect(myGameBoard.receiveHit(6)).toBe("Valid hit");
   });
 
   test("Should not register succesful hit if square has already been targeted", () => {
     const myDestroyer = battleShip(4);
-    myGameBoard.placeShip(myDestroyer, 4);
+    myGameBoard.placeShip(myDestroyer, 4, "Vertical");
     myGameBoard.receiveHit(4);
 
     expect(myGameBoard.receiveHit(4)).toBe("Invalid hit");
