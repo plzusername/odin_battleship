@@ -84,3 +84,29 @@ describe("Test gameBoard tracking of all unsunken ships ", () => {
     expect(myGameBoard.allShipsSunken()).toBe(false);
   });
 });
+
+describe("Test rotation of battleShips when placing them ", () => {
+  const myGameBoard = gameBoard();
+
+  test("Should test vertical placement", () => {
+    const myBattleShip = battleShip(4);
+    myGameBoard.placeShip(myBattleShip, 6, "Vertical");
+    myGameBoard.receiveHit(6);
+    myGameBoard.receiveHit(16);
+    myGameBoard.receiveHit(26);
+    myGameBoard.receiveHit(36);
+
+    expect(myGameBoard.allShipsSunken()).toBe(true);
+  });
+
+  test("Should test horizontal placement", () => {
+    const myBattleShip = battleShip(4);
+    myGameBoard.placeShip(myBattleShip, 6, "Horizontal");
+    myGameBoard.receiveHit(6);
+    myGameBoard.receiveHit(7);
+    myGameBoard.receiveHit(8);
+    myGameBoard.receiveHit(8);
+
+    expect(myGameBoard.allShipsSunken()).toBe(true);
+  });
+});
