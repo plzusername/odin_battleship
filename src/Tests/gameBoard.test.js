@@ -27,7 +27,7 @@ describe("Test the placement function of battleships", () => {
     expect(myGameBoard.placeShip(myDestroyer, 47, "Vertical")).toBe(
       "Valid placement"
     );
-    expect(myGameBoard.placeShip(myCruiser, 48), "Vertical").toBe(
+    expect(myGameBoard.placeShip(myCruiser, 48, "Vertical")).toBe(
       "Invalid placement"
     );
   });
@@ -53,18 +53,18 @@ describe("Test gameboards registration and processing of hits ", () => {
 
   test("Should register succesful hit when targeting empty square", () => {
     const myCruiser = battleShip(3);
-    myGameBoard.placeShip(myCruiser, 4);
+    myGameBoard.placeShip(myCruiser, 4, "Vertical");
 
     expect(myGameBoard.receiveHit(8)).toBe("Valid hit, empty square");
   });
 });
 
 describe("Test gameBoard tracking of all unsunken ships ", () => {
-  const myGameBoard = gameBoard();
-
   test("Should return true when all ships are sunken", () => {
+    const myGameBoard = gameBoard();
+
     const myBattleShip = battleShip(4);
-    myGameBoard.placeShip(myBattleShip, 6);
+    myGameBoard.placeShip(myBattleShip, 6, "Vertical");
     myGameBoard.receiveHit(6);
     myGameBoard.receiveHit(16);
     myGameBoard.receiveHit(26);
@@ -74,8 +74,10 @@ describe("Test gameBoard tracking of all unsunken ships ", () => {
   });
 
   test("Should return false when all ships are not sunken", () => {
+    const myGameBoard = gameBoard();
+
     const myBattleShip = battleShip(5);
-    myGameBoard.placeShip(myBattleShip, 43);
+    myGameBoard.placeShip(myBattleShip, 43, "Vertical");
     myGameBoard.receiveHit(43);
     myGameBoard.receiveHit(53);
     myGameBoard.receiveHit(63);
@@ -86,9 +88,9 @@ describe("Test gameBoard tracking of all unsunken ships ", () => {
 });
 
 describe("Test rotation of battleShips when placing them ", () => {
-  const myGameBoard = gameBoard();
-
   test("Should test vertical placement", () => {
+    const myGameBoard = gameBoard();
+
     const myBattleShip = battleShip(4);
     myGameBoard.placeShip(myBattleShip, 6, "Vertical");
     myGameBoard.receiveHit(6);
@@ -100,12 +102,14 @@ describe("Test rotation of battleShips when placing them ", () => {
   });
 
   test("Should test horizontal placement", () => {
+    const myGameBoard = gameBoard();
+
     const myBattleShip = battleShip(4);
     myGameBoard.placeShip(myBattleShip, 6, "Horizontal");
     myGameBoard.receiveHit(6);
     myGameBoard.receiveHit(7);
     myGameBoard.receiveHit(8);
-    myGameBoard.receiveHit(8);
+    myGameBoard.receiveHit(9);
 
     expect(myGameBoard.allShipsSunken()).toBe(true);
   });
