@@ -1,0 +1,11 @@
+{
+    "presets": [
+      "@babel/preset-env",  // Transpile ES6+ syntax to ES5
+      "@babel/preset-react" // Transpile JSX syntax used in React
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime",       // Reuse Babel's helper code to save on codesize
+      "@babel/plugin-proposal-class-properties" // Enable support for class properties syntax
+    ]
+  }
+  
