@@ -20,10 +20,10 @@ describe("test for intelligient hit behaviour from the computer", () => {
   test("Computer should have hit the ship square next to the targe square after at least 3 tries", () => {
     humanPlayer.addShip(humanBattleShip);
     computerPlayer.makeHit(2, humanPlayer.playerBoard);
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
-    expect(computerPlayer.makeAIhit()).toBe("Valid hit");
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    expect(computerPlayer.makeAIhit(humanPlayer.playerBoard)).toBe("Valid hit");
   });
 });
 
@@ -38,15 +38,15 @@ describe("Should determine victor from two competing players", () => {
 
   test("Should declare the computer victor after sinking all human players ships, while avoidning premptively declaring the computer as the winner", () => {
     computerPlayer.makeHit(50, humanPlayer.playerBoard);
-    computerPlayer.makeAIhit();
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
 
     expect(computerPlayer.isWinner()).toBe(false);
 
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
-    computerPlayer.makeAIhit();
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
 
     expect(computerPlayer.isWinner()).toBe(true);
   });
