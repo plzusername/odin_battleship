@@ -7,7 +7,7 @@ describe("test for valid computer ship placements", () => {
   const humanPLayer = player();
 
   test("computer should place ships as to not overflow out of the board or come in contact with other warships", () => {
-    computerPlayer.placeShips();
+    computerPlayer.placeShipsRandomly();
     expect(humanPLayer.board).not.toEqual(Array(100).fill(0));
   });
 });
@@ -19,7 +19,7 @@ describe("test for intelligient hit behaviour from the computer", () => {
 
   test("Computer should have hit the ship square next to the targe square after at least 3 tries", () => {
     humanPlayer.addShip(humanBattleShip);
-    computerPlayer.makeHit(2);
+    computerPlayer.makeHit(2, humanPlayer.playerBoard);
     computerPlayer.makeAIhit();
     computerPlayer.makeAIhit();
     computerPlayer.makeAIhit();
@@ -37,7 +37,7 @@ describe("Should determine victor from two competing players", () => {
   computerPlayer.addShip(commputerShip);
 
   test("Should declare the computer victor after sinking all human players ships, while avoidning premptively declaring the computer as the winner", () => {
-    computerPlayer.makeHit(50);
+    computerPlayer.makeHit(50, humanPlayer.playerBoard);
     computerPlayer.makeAIhit();
 
     expect(computerPlayer.isWinner()).toBe(false);
