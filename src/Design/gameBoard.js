@@ -26,7 +26,7 @@ export function gameBoard() {
     }
   }
 
-  function get_squares_neighbors(squareIndex) {
+  function get_squares_neighbors(squareIndex, board) {
     const neighboring_squares = [-10, 10, 11, -11, 9, -9, 1, -1];
 
     return neighboring_squares
@@ -34,7 +34,7 @@ export function gameBoard() {
         (neighborIndex) =>
           squareIndex + neighborIndex > -1 &&
           squareIndex + neighborIndex < 100 &&
-          Board[squareIndex + neighborIndex]
+          board[squareIndex + neighborIndex]
       )
       .map((neighbor) => squareIndex + neighbor);
   }
@@ -62,10 +62,11 @@ export function gameBoard() {
 
       if (
         !(
-          get_squares_neighbors(current_ship_block_index).length == 0 ||
+          get_squares_neighbors(current_ship_block_index, Board).length == 0 ||
           ((i == 0 || i == shipLength - 1) &&
-            get_squares_neighbors(current_ship_block_index).length == 1) ||
-          get_squares_neighbors(current_ship_block_index).length == 2
+            get_squares_neighbors(current_ship_block_index, Board).length ==
+              1) ||
+          get_squares_neighbors(current_ship_block_index, Board).length == 2
         )
       )
         return false;
@@ -85,30 +86,35 @@ export function gameBoard() {
   }
 
   function registerShipAttack(squareIndex) {
-    if (squareIndex == null) return;
+    if (squareIndex == []) return;
 
     Board[squareIndex].receiveHit();
-    registerShipAttack(get_squares_neighbors(squareIndex));
+    registerShipAttack([get_squares_neighbors(squareIndex, Board)]);
   }
 
   function receiveHit(coordinates) {
-    if (Board[coordinates] == -1) return "Invalid hit";
-
-    if (Board[coordinates]) {
+    const validity_of_hit = validHit(coordinates);
+    if (Board[coordinates] && Board[coordinates] != -1) {
       Board[coordinates].receiveHit();
+      if (Board[coordinates].isSunk()) shipsAvailable -= 1;
 
       for (let i = 0; i < get_squares_neighbors().length; i++) {
         registerShipAttack(get_squares_neighbors()[i]);
       }
-      if (Board[coordinates].isSunk()) shipsAvailable -= 1;
 
       Board[coordinates] = -1;
-      return "Valid hit";
     }
     if (!Board[coordinates]) {
       Board[coordinates] = -1;
-      return "Valid hit, empty square";
     }
+
+    return validity_of_hit;
+  }
+
+  function validHit(coordinates) {
+    if (Board[coordinates] == -1) return "Invalid hit";
+    if (Board[coordinates]) return "Valid hit";
+    if (Board[coordinates] === 0) return "Valid hit, empty square";
   }
 
   function allShipsSunken() {
@@ -119,5 +125,7 @@ export function gameBoard() {
     placeShip,
     receiveHit,
     allShipsSunken,
+    validHit,
+    Board,
   };
 }
