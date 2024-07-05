@@ -15,39 +15,39 @@ describe("test for valid computer ship placements", () => {
 describe("test for intelligient hit behaviour from the computer", () => {
   const computerPlayer = player().Computer();
   const humanPlayer = player();
-  const humanBattleShip = battleShip(4, 2, "Vertical");
+  const humanBattleShip = battleShip(5);
 
   test("Computer should have hit the ship square next to the targe square after at least 3 tries", () => {
-    humanPlayer.addShip(humanBattleShip);
+    humanPlayer.addShip(humanBattleShip, 2, "Vertical");
     computerPlayer.makeHit(2, humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     expect(computerPlayer.makeAIhit(humanPlayer.playerBoard)).toBe("Valid hit");
+    expect(humanPlayer.playerBoard.allShipsSunken()).toBe(true);
   });
 });
 
 describe("Should determine victor from two competing players", () => {
   const computerPlayer = player().Computer();
   const humanPlayer = player();
-  const humanShip = battleShip(3, 50, "Vertical");
-  const commputerShip = battleShip(3, 56, "Vertical");
+  const humanShip = battleShip(3);
+  const commputerShip = battleShip(3);
 
-  humanPlayer.addShip(humanShip);
-  computerPlayer.addShip(commputerShip);
+  humanPlayer.addShip(humanShip, 50, "Vertical");
+  computerPlayer.addShip(commputerShip, 56, "Vertical");
 
   test("Should declare the computer victor after sinking all human players ships, while avoidning premptively declaring the computer as the winner", () => {
     computerPlayer.makeHit(50, humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
 
-    expect(computerPlayer.isWinner()).toBe(false);
+    expect(computerPlayer.isWinner(humanPlayer)).toBe(false);
 
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
-    computerPlayer.makeAIhit(humanPlayer.playerBoard);
 
-    expect(computerPlayer.isWinner()).toBe(true);
+    expect(computerPlayer.isWinner(humanPlayer)).toBe(true);
   });
 });
