@@ -38,6 +38,12 @@ const createLogo = () => {
   return logo;
 };
 
+const createMain = () => {
+  const main_body = createElement("main", { class: "main-container" }, [], "");
+
+  return main_body;
+};
+
 const createIntroModal = () => {
   const descriptionTextNode = document.createTextNode("");
   const startGameButtonTextNode = document.createTextNode("");
@@ -127,4 +133,34 @@ const createIntroModalPreview = () => {
   );
 
   return previewImage;
+};
+
+const createActiveGameContainer = () => {};
+
+const createGameInstructions = () => {
+  const gameInstructionsHeaderTextNode = document.createTextNode("");
+  const gameInstructionsDetailsTextNoce = document.createTextNode("");
+
+  const gameInstructionsHeader = createElement(
+    "h1",
+    { class: "game-instructions-header" },
+    [],
+    gameInstructionsHeaderTextNode
+  );
+
+  const gameInstructionsDetails = createElement(
+    "p",
+    { class: "game-instructions-details" },
+    [],
+    gameInstructionsDetailsTextNoce
+  );
+
+  const gameInstructions = createElement(
+    "div",
+    { class: "game-instructions" },
+    [gameInstructionsHeader, gameInstructionsDetails],
+    ""
+  );
+
+  return gameInstructions;
 };
