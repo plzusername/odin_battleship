@@ -1,4 +1,4 @@
-import { createElement } from "./createElement";
+import { createElement, setDataProperties } from "./createElement";
 
 const createHeader = () => {
   const logo = createLogo();
@@ -135,7 +135,16 @@ const createIntroModalPreview = () => {
   return previewImage;
 };
 
-const createActiveGameContainer = () => {};
+const createSelectionGameContainer = (selectionBoardSize) => {
+  const selectionGameContainer = createElement(
+    "div",
+    { class: "selection-game-container" },
+    [createGameInstructions(), createSelectionGameBoard(selectionBoardSize)],
+    ""
+  );
+
+  return selectionGameContainer;
+};
 
 const createGameInstructions = () => {
   const gameInstructionsHeaderTextNode = document.createTextNode("");
@@ -163,4 +172,60 @@ const createGameInstructions = () => {
   );
 
   return gameInstructions;
+};
+
+const createSelectionGameBoard = (selectionBoardSize) => {
+  const gameBoard = createElement(
+    "div",
+    { class: "selection-battleShip-gameBoard" },
+    createCells(selectionBoardSize),
+    ""
+  );
+
+  return gameBoard;
+};
+
+const createCells = (boardSize = 100) => {
+  for (let i = 0; i < boardSize; i++) {
+    const boardCell = createElement(
+      "div",
+      { class: "preGame-boardCell" },
+      [],
+      ""
+    );
+
+    setDataProperties(boardCell, { coordinates: i });
+  }
+
+  return document.querySelectorAll(".preGame-boardCell");
+};
+
+const createSelectionButtonsSection = () => {
+  const randomButton = createElement(
+    "button",
+    { class: "random-selection-board-button" },
+    [],
+    "Random"
+  );
+  const startGameButton = createElement(
+    "button",
+    { class: "start-Game-selection-board-button" },
+    [],
+    "Start Game"
+  );
+  const resetButton = createElement(
+    "button",
+    { class: "reset-selection-board-button" },
+    [],
+    "Reset"
+  );
+
+  const selectionButtonsSection = createElement(
+    "div",
+    { class: "buttons-selection-section" },
+    [randomButton, startGameButton, resetButton],
+    ""
+  );
+
+  return selectionButtonsSection;
 };
