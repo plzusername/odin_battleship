@@ -15,7 +15,12 @@ const createHeader = () => {
 const createLogo = () => {
   const logoTitleTextNode = document.createTextNode("");
 
-  const logoIcon = createElement("i", { class: "fa-solid fa-ship" }, [], "");
+  const logoIcon = createElement(
+    "i",
+    { class: "fa-solid fa-ship logi-icon" },
+    [],
+    ""
+  );
   const logoText = createElement(
     "h2",
     { class: "logo-icon" },
@@ -60,6 +65,41 @@ const createIntroModal = () => {
   );
 
   return modal;
+};
+
+const createFooter = () => {
+  const githubNameTextNode = document.createTextNode("");
+
+  const githubIcon = createElement(
+    "i",
+    { class: "fa-brands fa-github github-icon" },
+    [],
+    ""
+  );
+  const gtihubName = createElement(
+    "p",
+    { class: "github-name" },
+    [],
+    githubNameTextNode
+  );
+
+  const linkSection = createElement(
+    "a",
+    { class: "github-link-section", href: "https://github.com/plzusername" },
+    [githubIcon, gtihubName],
+    ""
+  );
+
+  //visit my github pls (:
+
+  const footerSection = createElement(
+    "footer",
+    { class: "footer-section" },
+    [linkSection],
+    ""
+  );
+
+  return footerSection;
 };
 
 const createIntroModalPreview = () => {
