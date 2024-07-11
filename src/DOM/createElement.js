@@ -1,4 +1,4 @@
-export function createElement(tag, attributes, children, text) {
+function createElement(tag, attributes, children, text) {
   const element = document.createElement(tag);
   element.textContent = text;
 
@@ -21,3 +21,11 @@ const appendAttributes = (element, attributes) => {
     element.setAttribute(attribute, attributes[attribute]);
   }
 };
+
+function setDataProperties(element, datasetKeyValuePair) {
+  for (const dataItem of datasetKeyValuePair) {
+    element.dataset[dataItem] = datasetKeyValuePair[dataItem];
+  }
+}
+
+export { createElement, setDataProperties };
