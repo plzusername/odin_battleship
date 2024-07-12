@@ -1,4 +1,5 @@
 import { createElement, setDataProperties } from "./createElement";
+import "@fortawesome/fontawesome-free/js/all.js";
 
 const createHeader = () => {
   const logo = createLogo();
