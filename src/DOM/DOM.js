@@ -13,7 +13,7 @@ const createHeader = () => {
 };
 
 const createLogo = () => {
-  const logoTitleTextNode = document.createTextNode("");
+  const logoTitleTextNode = "BATTLESHIP";
 
   const logoIcon = createElement(
     "i",
@@ -23,7 +23,7 @@ const createLogo = () => {
   );
   const logoText = createElement(
     "h2",
-    { class: "logo-icon" },
+    { class: "logo-title" },
     [],
     logoTitleTextNode
   );
@@ -45,8 +45,8 @@ const createMain = () => {
 };
 
 const createIntroModal = () => {
-  const descriptionTextNode = document.createTextNode("");
-  const startGameButtonTextNode = document.createTextNode("");
+  const descriptionTextNode = "";
+  const startGameButtonTextNode = "";
 
   const modalPreviewImage = createIntroModalPreview();
   const gameDescription = createElement(
@@ -74,7 +74,7 @@ const createIntroModal = () => {
 };
 
 const createFooter = () => {
-  const githubNameTextNode = document.createTextNode("");
+  const githubNameTextNode = "";
 
   const githubIcon = createElement(
     "i",
@@ -109,8 +109,8 @@ const createFooter = () => {
 };
 
 const createIntroModalPreview = () => {
-  const previewHeaderTextNode = document.createTextNode("");
-  const previewCaptionTextNode = document.createTextNode("");
+  const previewHeaderTextNode = "";
+  const previewCaptionTextNode = "";
 
   const previewHeader = createElement(
     "h1",
@@ -139,7 +139,11 @@ const createSelectionGameContainer = (selectionBoardSize) => {
   const selectionGameContainer = createElement(
     "div",
     { class: "selection-game-container" },
-    [createGameInstructions(), createSelectionGameBoard(selectionBoardSize)],
+    [
+      createGameInstructions(),
+      createSelectionGameBoard(selectionBoardSize),
+      createSelectionButtonsSection(),
+    ],
     ""
   );
 
@@ -147,8 +151,8 @@ const createSelectionGameContainer = (selectionBoardSize) => {
 };
 
 const createGameInstructions = () => {
-  const gameInstructionsHeaderTextNode = document.createTextNode("");
-  const gameInstructionsDetailsTextNoce = document.createTextNode("");
+  const gameInstructionsHeaderTextNode = "";
+  const gameInstructionsDetailsTextNoce = "";
 
   const gameInstructionsHeader = createElement(
     "h1",
@@ -178,21 +182,16 @@ const createSelectionGameBoard = (selectionBoardSize) => {
   const gameBoard = createElement(
     "div",
     { class: "selection-battleShip-gameBoard" },
-    createCells(selectionBoardSize),
+    createCells("preGame-boardCell", selectionBoardSize),
     ""
   );
 
   return gameBoard;
 };
 
-const createCells = (boardSize = 100) => {
+const createCells = (domClass, boardSize = 100) => {
   for (let i = 0; i < boardSize; i++) {
-    const boardCell = createElement(
-      "div",
-      { class: "preGame-boardCell" },
-      [],
-      ""
-    );
+    const boardCell = createElement("div", { class: domClass }, [], "");
 
     setDataProperties(boardCell, { coordinates: i });
   }
@@ -229,3 +228,73 @@ const createSelectionButtonsSection = () => {
 
   return selectionButtonsSection;
 };
+
+const createActiveGameBoard = () => {
+  const gameBoardTitleTextNode = "";
+
+  const gameBoardTitle = createElement(
+    "h2",
+    { class: "active-gameboard-title" },
+    [],
+    gameBoardTitleTextNode
+  );
+
+  const gameBoard = createElement(
+    "div",
+    { class: "selection-battleShip-gameBoard" },
+    [gameBoardTitle, createCells("activeGame-boardCell", selectionBoardSize)],
+    ""
+  );
+
+  return gameBoard;
+};
+
+const createGameResultModal = () => {
+  const gameResultTitleTextNode = "";
+  const gameResultDescriptionTextNode = "";
+
+  const gameResultTitle = createElement(
+    "h2",
+    { class: "game-result-modal-title" },
+    [],
+    gameResultTitleTextNode
+  );
+
+  const gameResultDescription = createElement(
+    "p",
+    { class: "game-result-modal-titdescriptionle" },
+    [],
+    gameResultDescriptionTextNode
+  );
+
+  const mainMenuButton = createElement(
+    "button",
+    { class: "main-menu-button-modal" },
+    [],
+    "Main Menu"
+  );
+  const playAgainButton = createElement(
+    "button",
+    { class: "play-again-button-modal" },
+    [],
+    "Play-again"
+  );
+
+  const buttonsContainer = createElement(
+    "div",
+    { class: "game-result-modal-buttons-container" },
+    [playAgainButton, mainMenuButton],
+    ""
+  );
+
+  const gameResultModal = createElement(
+    "div",
+    { class: "game-result-modal" },
+    [gameResultTitle, gameResultDescription, buttonsContainer],
+    ""
+  );
+
+  return gameResultModal;
+};
+
+export { createHeader };
