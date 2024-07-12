@@ -2,12 +2,10 @@ function createElement(tag, attributes, children, text) {
   const element = document.createElement(tag);
   element.textContent = text;
 
-  for (const attribute of attributes) {
-    element.setAttribute(attribute, attributes[attribute]);
-  }
-
   appendChildren(element, children);
   appendAttributes(element, attributes);
+
+  return element;
 }
 
 const appendChildren = (parent, children) => {
@@ -17,13 +15,13 @@ const appendChildren = (parent, children) => {
 };
 
 const appendAttributes = (element, attributes) => {
-  for (const attribute of attributes) {
+  for (const attribute in attributes) {
     element.setAttribute(attribute, attributes[attribute]);
   }
 };
 
 function setDataProperties(element, datasetKeyValuePair) {
-  for (const dataItem of datasetKeyValuePair) {
+  for (const dataItem in datasetKeyValuePair) {
     element.dataset[dataItem] = datasetKeyValuePair[dataItem];
   }
 }
