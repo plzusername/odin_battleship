@@ -2,7 +2,6 @@
   "name": "odin_battleship",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "webpack.config.js",
   "scripts": {
     "test": "jest",
