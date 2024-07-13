@@ -1,3 +1,4 @@
+import { battleShip } from "../Design/battleShip";
 import { createElement, setDataProperties } from "./createElement";
 import "@fortawesome/fontawesome-free/js/all.js";
 
@@ -386,10 +387,10 @@ function renderGameboard(gameBoard, domBoardCells) {
   });
 }
 
-function applyHoverStyles(domCell, shipOverlaps) {
+function applyHoverStyles(domCell, spaciousSquare) {
   domCell.classList.add("valid-ship-square");
 
-  if (shipOverlaps) {
+  if (!spaciousSquare) {
     domCell.classList.add("overlap-ship-square");
     domCell.classList.remove("valid-ship-square");
   }
@@ -400,21 +401,31 @@ function highlightShipSquares(player, startSquare, domBoardCells) {
   const placementRotation = placementManager.getCurrentRotation();
   const currentShipLength = placementManager.getCurrentShip();
   const increment = placementRotation == "Vertical" ? 10 : 1;
-  const indexoverlaps = (index) =>
-    index > -1 && index < 100 && index % 10 < (index + currentShipLength) % 10;
 
   for (
     let i = startSquare;
-    i < currentShipLength && !indexoverlaps(i);
+    i < currentShipLength &&
+    player.gameBoard.isSpaciousSquare(i, currentShipLength, placementRotation);
     i += increment
   ) {
     const domCell = domBoardCells[i];
 
     applyHoverStyles(
       domCell,
-      indexoverlaps(startSquare + currentShipLength * increment)
+      player.gameBoard.isSpaciousSquare(i, currentShipLength, placementRotation)
     );
   }
+}
+
+function placePlayerShip(player, coordinates, domCells) {
+  const placementManager = player.placeShipManager();
+  const placementRotation = placementManager.getCurrentRotation();
+  const currentShipLength = placementManager.getCurrentShip();
+  const currentBattleShip = battleShip(currentShipLength);
+
+  player.addShip(currentBattleShip, coordinates, placementRotation);
+
+  renderGameboard(player.gameBoard, domCells);
 }
 
 export { createHeader };
