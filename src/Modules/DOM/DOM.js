@@ -386,9 +386,35 @@ function renderGameboard(gameBoard, domBoardCells) {
   });
 }
 
-function playerPlaceShipsRandomly(player, domBoardCells) {
-  player.placeShipsRandomly();
-  renderGameboard(player.gameBoard, domBoardCells);
+function applyHoverStyles(domCell, shipOverlaps) {
+  domCell.classList.add("valid-ship-square");
+
+  if (shipOverlaps) {
+    domCell.classList.add("overlap-ship-square");
+    domCell.classList.remove("valid-ship-square");
+  }
+}
+
+function highlightShipSquares(player, startSquare, domBoardCells) {
+  const placementManager = player.placeShipManager();
+  const placementRotation = placementManager.getCurrentRotation();
+  const currentShipLength = placementManager.getCurrentShip();
+  const increment = placementRotation == "Vertical" ? 10 : 1;
+  const indexoverlaps = (index) =>
+    index > -1 && index < 100 && index % 10 < (index + currentShipLength) % 10;
+
+  for (
+    let i = startSquare;
+    i < currentShipLength && !indexoverlaps(i);
+    i += increment
+  ) {
+    const domCell = domBoardCells[i];
+
+    applyHoverStyles(
+      domCell,
+      indexoverlaps(startSquare + currentShipLength * increment)
+    );
+  }
 }
 
 export { createHeader };
