@@ -94,7 +94,7 @@ export function player() {
     }
 
     function getCurrentShip() {
-      shipLengths[shipIndex];
+      return shipLengths[shipIndex];
     }
 
     function moveToNextShip() {
