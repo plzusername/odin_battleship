@@ -126,6 +126,7 @@ export function gameBoard() {
     receiveHit,
     allShipsSunken,
     validHit,
+    isSpaciousSquare,
     Board,
   };
 }
