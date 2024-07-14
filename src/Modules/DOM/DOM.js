@@ -432,14 +432,22 @@ function placePlayerShip(player, coordinates, domCells) {
 
 function decideFinalModalTextContent(winner) {
   const finalModalTitle = document.querySelector(".game-result-modal-title");
-  const finalModal = document.querySelector(".game-result-modal-title");
+  const finalModalDescription = document.querySelector(
+    ".game-result-modal-description"
+  );
+
   let playerIsWinner = "You win!";
+  let resultDescription =
+    "And your opponent reels! Keep it up, and you may become a great future admiral";
 
   if (winner.hasOwnProperty(makeAIhit)) {
     playerIsWinner = "You lose!";
+    resultDescription =
+      "Defeat? DEFEAT!?!? You better get back in the ring straight away! Lest the enemy gain an advantage...";
   }
 
-  finalModal.textContent = playerIsWinner;
+  finalModalTitle.textContent = playerIsWinner;
+  finalModalDescription.textContent = resultDescription;
 }
 
 export { createHeader };
