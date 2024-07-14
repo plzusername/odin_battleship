@@ -47,8 +47,8 @@ const createMain = () => {
 };
 
 const createIntroModal = () => {
-  const descriptionTextNode = "";
-  const startGameButtonTextNode = "";
+  const descriptionTextNode = `This action packed thriller game is full of anything and everything that ww2 history nerds and board game lovers alike would enjoy. A game in which you must skillfully target your opponents warships, it truly makes even the most hardened of navy veterans hop in their seats! With everything at stake, will you be able to masterfully coordinate your fleet to defeat your enemy, or will you get your naval forces pummeled by a superier enemy, find out Now!`;
+  const startGameButtonTextNode = "Start";
 
   const modalPreviewImage = createIntroModalPreview();
   const gameDescription = createElement(
@@ -76,7 +76,7 @@ const createIntroModal = () => {
 };
 
 const createFooter = () => {
-  const githubNameTextNode = "";
+  const githubNameTextNode = "MOFRIS";
 
   const githubIcon = createElement(
     "i",
@@ -111,8 +111,8 @@ const createFooter = () => {
 };
 
 const createIntroModalPreview = () => {
-  const previewHeaderTextNode = "";
-  const previewCaptionTextNode = "";
+  const previewHeaderTextNode = "BATTLESHIP";
+  const previewCaptionTextNode = "The classic naval board game";
 
   const previewHeader = createElement(
     "h1",
@@ -153,8 +153,9 @@ const createSelectionGameContainer = (selectionBoardSize) => {
 };
 
 const createGameInstructions = () => {
-  const gameInstructionsHeaderTextNode = "";
-  const gameInstructionsDetailsTextNoce = "";
+  const gameInstructionsHeaderTextNode = "Fleet into position!";
+  const gameInstructionsDetailsTextNode =
+    "Place your 5x ships, Note: you can right click to toggle ship placement rotation";
 
   const gameInstructionsHeader = createElement(
     "h1",
@@ -167,7 +168,7 @@ const createGameInstructions = () => {
     "p",
     { class: "game-instructions-details" },
     [],
-    gameInstructionsDetailsTextNoce
+    gameInstructionsDetailsTextNode
   );
 
   const gameInstructions = createElement(
@@ -232,7 +233,7 @@ const createSelectionButtonsSection = () => {
 };
 
 const createActiveGameBoard = () => {
-  const gameBoardTitleTextNode = "";
+  const gameBoardTitleTextNode = "Where be the enemy hiding?";
 
   const gameBoardTitle = createElement(
     "h2",
@@ -252,8 +253,9 @@ const createActiveGameBoard = () => {
 };
 
 const createGameResultModal = () => {
-  const gameResultTitleTextNode = "";
-  const gameResultDescriptionTextNode = "";
+  const gameResultTitleTextNode = "You win!";
+  const gameResultDescriptionTextNode =
+    "And your opponent reels! Keep it up, and you may become a great future admiral!";
 
   const gameResultTitle = createElement(
     "h2",
@@ -264,7 +266,7 @@ const createGameResultModal = () => {
 
   const gameResultDescription = createElement(
     "p",
-    { class: "game-result-modal-titdescriptionle" },
+    { class: "game-result-modal-description" },
     [],
     gameResultDescriptionTextNode
   );
@@ -426,6 +428,18 @@ function placePlayerShip(player, coordinates, domCells) {
   player.addShip(currentBattleShip, coordinates, placementRotation);
 
   renderGameboard(player.gameBoard, domCells);
+}
+
+function decideFinalModalTextContent(winner) {
+  const finalModalTitle = document.querySelector(".game-result-modal-title");
+  const finalModal = document.querySelector(".game-result-modal-title");
+  let playerIsWinner = "You win!";
+
+  if (winner.hasOwnProperty(makeAIhit)) {
+    playerIsWinner = "You lose!";
+  }
+
+  finalModal.textContent = playerIsWinner;
 }
 
 export { createHeader };
