@@ -26,7 +26,7 @@ export function gameBoard() {
     }
   }
 
-  function get_squares_neighbors(squareIndex, board) {
+  function get_squares_neighbors(squareIndex) {
     const neighboring_squares = [-10, 10, 11, -11, 9, -9, 1, -1];
 
     return neighboring_squares
@@ -34,7 +34,7 @@ export function gameBoard() {
         (neighborIndex) =>
           squareIndex + neighborIndex > -1 &&
           squareIndex + neighborIndex < 100 &&
-          board[squareIndex + neighborIndex]
+          Board[squareIndex + neighborIndex]
       )
       .map((neighbor) => squareIndex + neighbor);
   }
@@ -127,6 +127,7 @@ export function gameBoard() {
     allShipsSunken,
     validHit,
     isSpaciousSquare,
+    get_squares_neighbors,
     Board,
   };
 }
