@@ -3,25 +3,11 @@ import { gameBoard } from "../Design/gameBoard";
 
 export function player() {
   const playerBoard = gameBoard();
-  const ships = [2, 2, 3, 4, 5];
   const rotations = ["Vertical", "Horizontal"];
-  const board = playerBoard.Board;
+  const placeShipManager = placeShipManagerFactory();
 
   function isWinner(opponent) {
     return opponent.playerBoard.allShipsSunken();
-  }
-
-  function get_squares_neighbors(squareIndex, board) {
-    const neighboring_squares = [-10, 10, 11, -11, 9, -9, 1, -1];
-
-    return neighboring_squares
-      .filter(
-        (neighborIndex) =>
-          squareIndex + neighborIndex > -1 &&
-          squareIndex + neighborIndex < 100 &&
-          board[squareIndex + neighborIndex]
-      )
-      .map((neighbor) => squareIndex + neighbor);
   }
 
   function generateRandomNumber(min, max) {
@@ -30,6 +16,7 @@ export function player() {
 
   function addShip(ship, coordinates, rotation) {
     playerBoard.placeShip(ship, coordinates, rotation);
+    placeShipManager.moveToNextShip();
   }
 
   function remove_from_possibilities(board, squares) {
@@ -54,7 +41,7 @@ export function player() {
     const random_coordinates = getRandomCoords(board_reference);
     const occupied_squares = board_reference
       .reduce((square, accumalitive_array) => {
-        accumalitive_array.push(get_squares_neighbors(square));
+        accumalitive_array.push(playerBoard.get_squares_neighbors(square));
       }, [])
       .filter((square, index, array) => index == array.indexOf(square));
 
@@ -63,12 +50,10 @@ export function player() {
   }
 
   function placeShipsRandomly() {
-    let possible_possitions = board;
-    ships.forEach((shipLength) => {
-      const warShip = battleShip(shipLength);
+    let possible_possitions = playerBoard.Board;
+    const warShip = battleShip(placeShipManager.getCurrentShip());
 
-      placeShipRandomly(warShip, possible_possitions);
-    });
+    placeShipRandomly(warShip, possible_possitions);
   }
 
   function getRandomRotation() {
@@ -78,7 +63,7 @@ export function player() {
     return board[generateRandomNumber(0, board.length - 1)];
   }
 
-  function placeShipManager() {
+  function placeShipManagerFactory() {
     let rotation = "Vertical";
     let shipIndex = 0;
     let shipLengths = [5, 4, 3, 3, 2];
@@ -112,13 +97,18 @@ export function player() {
     let anchorSquare = -1;
     let neighboring_squares_index = 0;
     let rotation_decided = false;
+    let anchorSquareNeighbors;
 
     function saveHitSquare(coords) {
       anchorSquare = coords;
+      anchorSquareNeighbors = [10, -10, 1, -1].filter(
+        (square) => square + anchorSquare > -1 && square + anchorSquare < 100
+      );
     }
 
     function makeHit(coords, opponentBoard) {
-      if (opponentBoard.receiveHit(coords) == "Valid hit") {
+      if (opponentBoard.validHit(coords) == "Valid hit") {
+        opponentBoard.receiveHit(coords);
         saveHitSquare(coords);
       }
 
@@ -126,14 +116,15 @@ export function player() {
     }
 
     function makeAIhit(opponentBoard) {
-      const neighboring_squares = [10, -10, 1, -1].filter(
-        (square) =>
-          square + anchorSquare > -1 &&
-          square + anchorSquare < 100 &&
-          opponentBoard.Board[anchorSquare + square] != -1
-      );
+      if (
+        anchorSquareNeighbors[neighboring_squares_index] + anchorSquare ==
+        -1
+      ) {
+        neighboring_squares_index++;
+        makeAIhit(opponentBoard);
+      }
       const current_searched_square =
-        neighboring_squares[neighboring_squares_index];
+        anchorSquareNeighbors[neighboring_squares_index];
 
       anchorSquare += current_searched_square;
 
@@ -146,22 +137,27 @@ export function player() {
         anchorSquare = -1;
         neighboring_squares_index = 0;
         rotation_decided = false;
-
         return opponentBoard.receiveHit(anchorSquare);
       }
 
       opponentBoard.receiveHit(anchorSquare);
 
       if (hit_validity == "Valid hit, empty square" && rotation_decided) {
-        neighboring_squares_index +=
-          neighboring_squares_index % 2 == 0 ? 1 : -1;
+        neighboring_squares_index = anchorSquareNeighbors.indexOf(
+          anchorSquareNeighbors[neighboring_squares_index] * -1
+        );
       }
+
       if (hit_validity == "Valid hit, empty square" && !rotation_decided) {
         neighboring_squares_index++;
       }
+
       if (hit_validity == "Valid hit") {
         rotation_decided = true;
+        anchorSquare += current_searched_square;
       }
+
+      anchorSquare -= current_searched_square;
 
       return hit_validity;
     }
@@ -188,7 +184,8 @@ export function player() {
     addShip,
     Computer,
     hitSquare,
-    placeShipManager,
+    placeShipManagerFactory,
     playerBoard,
+    placeShipManager,
   };
 }
