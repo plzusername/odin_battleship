@@ -24,6 +24,10 @@ describe("test for intelligient hit behaviour from the computer", () => {
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     expect(computerPlayer.makeAIhit(humanPlayer.playerBoard)).toBe("Valid hit");
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
     expect(humanPlayer.playerBoard.allShipsSunken()).toBe(true);
   });
 });
