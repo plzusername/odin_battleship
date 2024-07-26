@@ -4,11 +4,14 @@ import { gameBoard } from "../Design/gameBoard";
 
 describe("test for valid computer ship placements", () => {
   const computerPlayer = player().Computer();
-  const humanPLayer = player();
+  const humanPlayer = player();
 
   test("computer should place ships as to not overflow out of the board or come in contact with other warships", () => {
     computerPlayer.placeShipsRandomly();
-    expect(humanPLayer.board).not.toEqual(Array(100).fill(0));
+    for (let i = 0; i < 2; i++) {
+      console.log(computerPlayer.playerBoard.Board);
+      expect(computerPlayer.playerBoard.Board).toEqual(Array(100).fill(0));
+    }
   });
 });
 
