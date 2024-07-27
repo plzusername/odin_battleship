@@ -1,16 +1,17 @@
-function battleShip(length){
-    const getLength = () => length
+function battleShip(length) {
+  let hits = 0;
 
-    let hits = 0
-    const receiveHit = () => hits++
+  const getLength = () => length;
+  const getHits = () => hits;
+  const receiveHit = () => hits++;
+  const isSunk = () => hits == length;
 
-    const isSunk = () => hits == length
-
-    return {
-        getLength,
-        receiveHit,
-        isSunk
-    }
+  return {
+    getLength,
+    receiveHit,
+    isSunk,
+    getHits,
+  };
 }
 
-export { battleShip }
+export { battleShip };
