@@ -6,6 +6,8 @@ export function gameBoard() {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
   let shipLocations = [];
+  let hitSquares = [];
+  let missedSquares = [];
   let shipsAvailable = 0;
 
   function getRotationIncrement(rotation) {
@@ -23,19 +25,39 @@ export function gameBoard() {
     return shipOccupiedSquares;
   }
 
-  function storeShipInBoard(coordinates, ship, rotation) {
-    const shipLength = ship.getLength();
-    Board[coordinates] = ship;
+  function returnShipAtCoords(coordinates) {
+    for (let i = 0; i < shipLocations.length; i++) {
+      const shipLocation = shipLocations[i];
 
-    for (let i = 0; i < shipLength; i++) {
-      const increment = getRotationIncrement(rotation);
-      Board[coordinates + increment * i] = ship;
+      if (shipLocation.occupiedSquares.includes(coordinates)) {
+        return shipLocation.ship;
+      }
     }
   }
 
+  function getItemAtCoords(coordinates) {
+    if (hitSquares.includes(coordinates)) return "X";
+    if (missedSquares.includes(coordinates)) return -1;
+    if (returnCoordinatesAreShip(coordinates))
+      return returnShipAtCoords(coordinates);
+
+    return 0;
+  }
+
+  function returnCoordinatesAreShip(coordinates) {
+    for (let i = 0; i < shipLocations.length; i++) {
+      const shipLocation = shipLocations[i];
+
+      if (shipLocation.occupiedSquares.includes(coordinates)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   function get_squares_neighbors(squareIndex) {
-    return get_neighbors(squareIndex).filter((indecies) => {
-      return isObject(Board[indecies]);
+    return get_neighbors(squareIndex).filter((neighborSquares) => {
+      return returnCoordinatesAreShip(neighborSquares);
     });
   }
   function isObject(val) {
@@ -71,8 +93,6 @@ export function gameBoard() {
       const current_ship_block_index = coordinates + i * increment;
 
       if (get_squares_neighbors(current_ship_block_index).length > 0) {
-        // console.log(get_neighbors(current_ship_block_index));
-        // console.log("NOT SPACIOUS", shipLength, coordinates, rotation);
         return false;
       }
     }
@@ -82,7 +102,6 @@ export function gameBoard() {
   function placeShip(ship, coordinates, rotation) {
     const shipLength = ship.getLength();
     if (isSpaciousSquare(coordinates, shipLength, rotation)) {
-      storeShipInBoard(coordinates, ship, rotation);
       shipLocations.push({
         coordinates,
         shipLength,
@@ -95,7 +114,6 @@ export function gameBoard() {
         ship,
       });
       shipsAvailable++;
-      // console.log(shipsAvailable);
 
       return "Valid placement";
     }
@@ -106,118 +124,40 @@ export function gameBoard() {
   function receiveHit(coordinates) {
     const validity_of_hit = validHit(coordinates);
 
-    if (isObject(Board[coordinates])) {
-      console.log(Board[coordinates].getHits(), "First attempt");
-      for (let i = 0; i < shipLocations.length; i++) {
-        const shipLocation = shipLocations[i];
-        const shipOccupiedSquares = shipLocation.occupiedSquares;
-        const shipLength = shipLocation.shipLength;
+    if (returnCoordinatesAreShip(coordinates)) {
+      returnShipAtCoords(coordinates).receiveHit();
+      if (returnShipAtCoords(coordinates).isSunk()) shipsAvailable -= 1;
 
-        const verticalAlignment =
-          (shipOccupiedSquares[shipOccupiedSquares.length - 1] % 10) -
-            (coordinates % 10) <
-            shipLength &&
-          shipOccupiedSquares[shipOccupiedSquares.length - 1] % 10 ==
-            coordinates % 10;
+      hitSquares.push(coordinates);
 
-        const horizontalAlignment =
-          shipOccupiedSquares[shipOccupiedSquares.length - 1] - coordinates <
-            shipLength &&
-          Math.floor(
-            shipOccupiedSquares[shipOccupiedSquares.length - 1] / 10
-          ) == Math.floor(coordinates / 10);
-
-        if (verticalAlignment || horizontalAlignment) {
-          shipOccupiedSquares.forEach((occupiedSquare) => {
-            if (isObject(Board[occupiedSquare])) {
-              Board[occupiedSquare].receiveHit();
-
-              // the problem is in js object reference shi
-            }
-          });
+      shipLocations.forEach((shipLocation) => {
+        if (shipLocation.occupiedSquares.includes(coordinates)) {
+          shipLocation.occupiedSquares.splice(
+            shipLocation.occupiedSquares.indexOf(coordinates),
+            1
+          );
         }
-      }
-      console.log(Board[coordinates].isSunk());
-      console.log(Board[coordinates].getLength());
-      console.log(Board[coordinates].getHits(), "Second attempt");
-
-      if (Board[coordinates].isSunk()) shipsAvailable -= 1;
-      Board[coordinates] = "X";
+      });
     }
-    if (!Board[coordinates]) {
-      Board[coordinates] = -1;
+    if (getItemAtCoords(coordinates) == 0) {
+      missedSquares.push(coordinates);
     }
 
     return validity_of_hit;
   }
 
   function validHit(coordinates) {
-    if (Board[coordinates] === "X" || Board[coordinates] === -1)
+    if (
+      getItemAtCoords(coordinates) === "X" ||
+      getItemAtCoords(coordinates) === -1
+    )
       return "Invalid hit";
-    if (Board[coordinates]) return "Valid hit";
-    if (Board[coordinates] === 0) return "Valid hit, empty square";
+    if (isObject(getItemAtCoords(coordinates))) return "Valid hit";
+    if (getItemAtCoords(coordinates) === 0) return "Valid hit, empty square";
   }
 
   function allShipsSunken() {
     return shipsAvailable == 0;
-  }
-
-  function prettyPrint(board) {
-    function getEdge(index) {
-      let edgesPresent = { horizontal: null, vertical: null };
-      if (index < 10) {
-        edgesPresent.vertical = 0;
-      }
-      if (index % 10 == 0) {
-        edgesPresent.horizontal = 0;
-      }
-
-      if (index > 89) {
-        edgesPresent.vertical = 10;
-      }
-      if (index % 10 == 9) {
-        edgesPresent.horizontal = 10;
-      }
-
-      return edgesPresent;
-    }
-    function isObject(obj) {
-      return obj != null && obj.constructor.name === "Object";
-    }
-
-    function addBorders(edges, cellContent) {
-      let borders = ` ${cellContent}`;
-      if (edges.horizontal != 10) borders += " |";
-      if (edges.horizontal == 10 && edges.vertical != 10)
-        borders += "\n ======================================= \n";
-
-      return borders;
-    }
-
-    function mapItem(cellContent) {
-      const shipEmoji = String.fromCodePoint(0x1f6a2);
-      const collisionEmoji = String.fromCodePoint(0x1f4a5);
-      if (isObject(cellContent)) {
-        return shipEmoji;
-      }
-      if (cellContent == -1 || cellContent == "X") {
-        return collisionEmoji;
-      }
-
-      return cellContent;
-    }
-
-    let prettyBoard = "";
-
-    for (let i = 0; i < board.length; i++) {
-      const cell = board[i];
-      const boardEdges = getEdge(i);
-      const prettifiedItem = mapItem(cell);
-
-      prettyBoard += addBorders(boardEdges, prettifiedItem);
-    }
-
-    return prettyBoard;
   }
 
   return {
@@ -229,7 +169,8 @@ export function gameBoard() {
     get_squares_neighbors,
     get_neighbors,
     returnShipOccupiedSquares,
-    prettyPrint,
+    getItemAtCoords,
+    shipLocations,
     Board,
   };
 }
