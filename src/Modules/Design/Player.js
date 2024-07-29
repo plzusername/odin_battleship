@@ -61,14 +61,10 @@ export function player() {
       return withinBoardBounds && isolatedShip;
     });
 
-    const random_coordinates = getRandomCoords(board_reference);
-
+    const random_coordinates = getRandomBoardCoords(board_reference);
     let occupied_squares = [];
 
-    // THE ISSUSE IS WITH IS GET_NEIGHBORS FUNCTION
-
     for (let i = 0; i < ship.getLength(); i++) {
-      console.log(playerBoard.get_squares_neighbors(shipCellCoordinate));
       const increment = rotation == "Vertical" ? 10 : 1;
       const shipCellCoordinate = random_coordinates + i * increment;
 
@@ -79,18 +75,6 @@ export function player() {
     occupied_squares = occupied_squares.filter(
       (square, index, array) => index === array.indexOf(square)
     );
-
-    console.log({
-      shipLength: ship.getLength(),
-      rotation,
-      board_reference,
-      random_coordinates,
-      occupied_squares,
-      available_squares: remove_from_possibilities(
-        currentBoard,
-        occupied_squares.sort((a, b) => a - b)
-      ),
-    });
 
     addShip(ship, random_coordinates, rotation);
 
@@ -103,77 +87,17 @@ export function player() {
     );
   }
 
-  function prettyPrint(board) {
-    function getEdge(index) {
-      let edgesPresent = { horizontal: null, vertical: null };
-      if (index < 10) {
-        edgesPresent.vertical = 0;
-      }
-      if (index % 10 == 0) {
-        edgesPresent.horizontal = 0;
-      }
-
-      if (index > 89) {
-        edgesPresent.vertical = 10;
-      }
-      if (index % 10 == 9) {
-        edgesPresent.horizontal = 10;
-      }
-
-      return edgesPresent;
-    }
-    function isObject(obj) {
-      return obj != null && obj.constructor.name === "Object";
-    }
-
-    function addBorders(edges, cellContent) {
-      let borders = ` ${cellContent}`;
-      if (edges.horizontal != 10) borders += " |";
-      if (edges.horizontal == 10 && edges.vertical != 10)
-        borders += "\n ======================================= \n";
-
-      return borders;
-    }
-
-    function mapItem(cellContent) {
-      const shipEmoji = String.fromCodePoint(0x1f6a2);
-      const collisionEmoji = String.fromCodePoint(0x1f4a5);
-      if (isObject(cellContent)) {
-        return shipEmoji;
-      }
-      if (cellContent == -1) {
-        return collisionEmoji;
-      }
-
-      return cellContent;
-    }
-
-    let prettyBoard = "";
-
-    for (let i = 0; i < board.length; i++) {
-      const cell = board[i];
-      const boardEdges = getEdge(i);
-      const prettifiedItem = mapItem(cell);
-
-      prettyBoard += addBorders(boardEdges, prettifiedItem);
-    }
-
-    return prettyBoard;
-  }
-
   function placeShipsRandomly() {
     let possible_possitions = playerBoard.Board.map((square, index) => index);
     const warShip = battleShip(placeShipManager.getCurrentShip());
 
     placeShipRandomly(warShip, possible_possitions);
-
-    console.log(prettyPrint(playerBoard.Board));
   }
 
   function getRandomRotation() {
     return rotations[generateRandomNumber(0, 1)];
   }
-  function getRandomCoords(board) {
+  function getRandomBoardCoords(board) {
     return board[generateRandomNumber(0, board.length - 1)];
   }
 
@@ -246,7 +170,7 @@ export function player() {
 
       if (
         hit_validity == "Valid hit" &&
-        opponentBoard.Board[anchorSquare].isSunk()
+        opponentBoard.getItemAtCoords(anchorSquare).isSunk()
       ) {
         anchorSquare = -1;
         neighboring_squares_index = 0;
