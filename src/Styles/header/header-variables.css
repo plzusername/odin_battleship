@@ -1,0 +1,9 @@
+:root{
+    --header-background-color:#305acb;
+    --header-padding:16px;
+    --header-font-color:#eff6ff;
+    --header-icon-color:#eff6ff;
+    --header-font-size:28px;
+    --header-flex-gap:12px;
+    --title-letter-spacing:2px;
+}

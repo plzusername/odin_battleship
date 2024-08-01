@@ -1,0 +1,29 @@
+@import url('./header-variables.css');
+@import url(https://fonts.googleapis.com/css?family=Anton:regular);
+
+header{
+    background-color: var(--header-background-color);
+    padding: var(--header-padding);
+    display: flex;
+    justify-content: flex-start;
+    color: var(--header-font-color);
+
+}
+
+.logo-container{
+    display: flex;
+    justify-content: flex-start;
+    gap:var(--header-flex-gap);
+    align-items: center;
+    font-family: 'Anton';
+}
+.logo-container > i{
+    vertical-align:middle;
+}
+
+.logo-container > *{
+    font-size: var(--header-font-size);
+}
+.logo-container > h2{
+    letter-spacing: var(--title-letter-spacing);
+}
