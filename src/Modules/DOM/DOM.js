@@ -1,5 +1,6 @@
 import { battleShip } from "../Design/battleShip";
 import { createElement, setDataProperties } from "./createElement";
+import { humanPlayer, computerPlayer } from "../Design/Player";
 import "@fortawesome/fontawesome-free/js/all.js";
 
 const createHeader = () => {
@@ -194,12 +195,12 @@ const createSelectionGameBoard = (selectionBoardSize) => {
 
 const createCells = (domClass, boardSize = 100) => {
   for (let i = 0; i < boardSize; i++) {
-    const boardCell = createElement("div", { class: domClass }, [], "");
+    const cellIndex = createElement("div", { class: domClass }, [], "");
 
-    setDataProperties(boardCell, { coordinates: i });
+    setDataProperties(cellIndex, { coordinates: i });
   }
 
-  return document.querySelectorAll(".preGame-boardCell");
+  return document.querySelectorAll(domClass);
 };
 
 const createSelectionButtonsSection = () => {
@@ -232,8 +233,8 @@ const createSelectionButtonsSection = () => {
   return selectionButtonsSection;
 };
 
-const createActiveGameBoard = () => {
-  const gameBoardTitleTextNode = "Where be the enemy hiding?";
+const createActiveGameBoard = (titleText, classes) => {
+  const gameBoardTitleTextNode = titleText;
 
   const gameBoardTitle = createElement(
     "h2",
@@ -244,13 +245,21 @@ const createActiveGameBoard = () => {
 
   const gameBoard = createElement(
     "div",
-    { class: "active-battleShip-gameBoard" },
-    [gameBoardTitle, createCells("activeGame-boardCell", selectionBoardSize)],
+    { class: classes },
+    [gameBoardTitle, ...createCells("activeGame-boardCell")],
     ""
   );
 
   return gameBoard;
 };
+
+function alternatePlayerBoards() {
+  const humanPlayerBoard = document.querySelector(".human-active-board");
+  const computerPlayerBoard = document.querySelector(".computer-active-board");
+
+  humanPlayerBoard.classList.toggle("active-board");
+  computerPlayerBoard.classList.toggle("active-board");
+}
 
 const createGameResultModal = () => {
   const gameResultTitleTextNode = "You win!";
@@ -301,48 +310,95 @@ const createGameResultModal = () => {
   return gameResultModal;
 };
 
-function addItemToMain(element) {
-  const main = document.querySelector("main");
+function toggleOverlayVisibility() {
+  const overlay = document.querySelector(".overlay");
 
-  main.appendChild(element);
+  overlay.classList.toggle("overlay-activity");
 }
 
-function toggleActivity(elements) {
-  elements.forEach((element) => {
-    if (element.classList.contains("inActive")) {
-      element.classList.remove("isActive");
-      return;
+function revealFinalResultModal() {
+  const finalResultModal = document.querySelector(".game-result-modal");
+
+  activateSection(finalResultModal);
+  toggleOverlayVisibility();
+}
+
+function activateSection(section) {
+  const main = document.querySelector(".main");
+
+  main.children.forEach((child) => {
+    child.classList.toggle("inActive");
+    if (child != section) {
+      child.classList.toggle("inActive");
     }
-    element.classList.add("inActive");
   });
 }
 
+function restartPlayerSettings() {
+  humanPlayer.resetPlayerSettings();
+  computerPlayer.resetPlayerSettings();
+}
+
+function revealStartSection() {
+  const startSection = document.querySelector(".modal-container");
+
+  activateSection(startSection);
+  restartPlayerSettings();
+  toggleOverlayVisibility();
+}
+
+function playAgain() {
+  const humanPlayerBoard = document.querySelector(".human-player-board");
+  const computerPlayerBoard = document.querySelector(".computer-player-board");
+
+  const humanBoard = translateIndeciesToBoard([], [], []);
+  const computerBoard = translateIndeciesToBoard([], [], []);
+
+  renderGameboard(humanBoard, humanPlayerBoard);
+  renderGameboard(computerBoard, computerPlayerBoard);
+
+  revealPregameBoard();
+  restartPlayerSettings();
+  toggleOverlayVisibility();
+}
+
 function revealPregameBoard() {
-  const introModal = document.querySelector(".modal-container");
   const preGameBoard = document.querySelector(".selection-game-container");
 
-  introModal.classList.add("inActive");
-  preGameBoard.classList.remove("inActive");
+  activateSection(preGameBoard);
 }
 
-function resetSelectionBoard() {
-  const preGameBoard = document.querySelector(".selection-game-container");
-  preGameBoard.remove();
+function resetSelectionBoard(player) {
+  const preGameBoardCells = document.querySelectorAll(".preGame-boardCell");
 
-  const newPregameBoard = createSelectionGameBoard();
+  player.gameBoard.shipLocations = [];
 
-  addItemToMain(newPregameBoard);
+  const board = translateIndeciesToBoard(
+    player.gameBoard.shipLocations,
+    [],
+    []
+  );
 
-  newPregameBoard.classList.remove("inActive");
+  renderGameboard(board, preGameBoardCells);
 }
 
-function startGame() {
-  const preGameBoard = document.querySelector(".selection-game-container");
+function startGame(player) {
   const activeGameBoard = document.querySelector(
     ".active-battleShip-gameBoard"
   );
 
-  toggleActivity([preGameBoard, activeGameBoard]);
+  if (player.gameBoard.shipLocations.length == 5) {
+    activateSection(activeGameBoard);
+  }
+}
+
+function placeRandomShips(player) {
+  const preGameBoardCells = document.querySelectorAll(".preGame-boardCell");
+
+  player.placeShipsRandomly();
+  const board = translateIndeciesToBoard(player.gameBoard.shipLocations);
+
+  renderGameboard(board, preGameBoardCells);
 }
 
 function isObject(objValue) {
@@ -351,41 +407,143 @@ function isObject(objValue) {
   );
 }
 
-const applyHitCellStyles = (domCell) => {
+const applyAttackedCellStyles = (domCell) => {
   const hitIcon = createElement("i", { class: "fa-solid fa-burst" }, [], "");
+  domCell.removeAttribute("class");
   domCell.appendChild(hitIcon);
   domCell.classList.add("cell-hit");
 };
 
 const applyEmptyHitCellStyles = (domCell) => {
+  domCell.removeAttribute("class");
   domCell.classList.add("empty-cell-hit");
 };
 
 const applyShipPresentStyles = (domCell) => {
   const battleShip = createElement(
     "img",
-    { class: "battleShip-cell-icon" },
+    {
+      class: "battleShip-cell-icon",
+      src: "../../Assets/ship-svgrepo-computerPlayer.svg",
+    },
     [],
     ""
   );
   domCell.appendChild(battleShip);
 };
 
-function applyCellStyles(cell, domCell) {
+function getNeighboringSquares(cellIndex, shipGameBoard) {
+  const neighboringSquares = [];
+
+  shipGameBoard.shipLocations.forEach((shipLocation) => {
+    if (shipLocation.occupiedSquares.includes(cellIndex)) {
+      shipLocation.occupiedSquares.forEach((occupiedSquare) => {
+        neighboringSquares.push(...shipGameBoard.get_neighbors(occupiedSquare));
+      });
+    }
+  });
+
+  neighboringSquares = neighboringSquares.filter(
+    (square, index, array) => index == array.indexOf(square)
+  );
+
+  return neighboringSquares;
+}
+
+function getOccupiedSquares(neighboringSquares, shipGameBoard) {
+  const occupied_squares = [];
+  neighboringSquares.forEach((neighboringSquare) => {
+    if (isObject(shipGameBoard.getItemAtCoords(neighboringSquare))) {
+      occupied_squares.push(neighboringSquare);
+    }
+  });
+
+  return occupied_squares;
+}
+
+const applySunkenShipStyles = (shipGameBoard, domCell) => {
+  const domCellIndex = domCell.dataset.coordinates;
+  const neighboringSquares = getNeighboringSquares(domCellIndex, shipGameBoard);
+  const occupiedSquares = getOccupiedSquares(neighboringSquares, shipGameBoard);
+
+  neighboringSquares.forEach((neighboringSquare) => {
+    const neighboringDomCell = domCell.closest(
+      `[data-coordinates=${neighboringSquare}]`
+    );
+
+    neighboringDomCell.removeAttribute("class");
+    neighboringDomCell.classList.add("empty-cell-hit");
+  });
+
+  occupiedSquares.forEach((occupiedSquare) => {
+    const occupiedDomCell = domCell.closest(
+      `[data-coordinates=${occupiedSquare}]`
+    );
+
+    const sunkenShip = createElement(
+      "img",
+      {
+        class: "sunken-ship-icon",
+        src: "../../Assets/sink-svgrepo-com.svg",
+      },
+      [],
+      ""
+    );
+
+    occupiedDomCell.appendChild(sunkenShip);
+  });
+};
+
+function applyNonShipCellStyles(cell, domCell, gameBoard) {
+  applySunkenShipStyles(gameBoard, domCell);
+  applyHitCellStyles(cell, domCell);
+}
+
+function applyCellStyles(cell, domCell, gameBoard) {
   if (isObject(cell)) {
     applyShipPresentStyles(domCell);
   }
+  applySunkenShipStyles(gameBoard, domCell);
+  applyNonShipCellStyles(cell, domCell);
+}
+
+function applyHitCellStyles(cell, domCell) {
   if (cell == -1) {
     applyEmptyHitCellStyles(domCell);
   }
   if (cell == "X") {
-    applyHitCellStyles(domCell);
+    applyAttackedCellStyles(domCell);
   }
 }
 
-function renderGameboard(gameBoard, domBoardCells) {
-  gameBoard.forEach((cell, index) => {
-    applyCellStyles(cell, domBoardCells[index]);
+function translateIndeciesToBoard(shipLocations, hitSquares, missSquares) {
+  const board = new Array(100).fill(0);
+
+  hitSquares.forEach((hitSquare) => {
+    board[hitSquare] = "X";
+  });
+  missSquares.forEach((missSquare) => {
+    board[missSquare] = -1;
+  });
+
+  shipLocations.forEach((shipLocation) => {
+    shipLocation.occupiedSquares.forEach((occupiedSquaree) => {
+      board[occupiedSquaree] = {};
+    });
+  });
+
+  return board;
+}
+
+function renderGameboard(Board, domBoardCells, gameBoard) {
+  Board.forEach((cell, index) => {
+    applyCellStyles(cell, domBoardCells[index], gameBoard);
+  });
+}
+
+function renderComputerGameBoard(Board, domBoardCells, gameBoard) {
+  Board.forEach((cell, index) => {
+    applyNonShipCellStyles(cell, domBoardCells[index], gameBoard);
   });
 }
 
@@ -407,7 +565,11 @@ function highlightShipSquares(player, startSquare, domBoardCells) {
   for (
     let i = startSquare;
     i < currentShipLength &&
-    player.gameBoard.isSpaciousSquare(i, currentShipLength, placementRotation);
+    player.gameBoard.isSpaciousSquare(
+      startSquare,
+      currentShipLength,
+      placementRotation
+    );
     i += increment
   ) {
     const domCell = domBoardCells[i];
@@ -420,14 +582,40 @@ function highlightShipSquares(player, startSquare, domBoardCells) {
 }
 
 function placePlayerShip(player, coordinates, domCells) {
+  const selectionInstructions = document.querySelector(
+    ".game-instructions-details"
+  );
+
   const placementManager = player.placeShipManager();
   const placementRotation = placementManager.getCurrentRotation();
   const currentShipLength = placementManager.getCurrentShip();
   const currentBattleShip = battleShip(currentShipLength);
+  const board = translateIndeciesToBoard(player.gameBoard.shipLocations);
 
   player.addShip(currentBattleShip, coordinates, placementRotation);
 
-  renderGameboard(player.gameBoard, domCells);
+  renderGameboard(board, domCells);
+
+  const selectionInstructionsText = `Place your ${currentShipLength} ships, Note: you can right click to toggle ship placement rotation`;
+  selectionInstructions.textContent = selectionInstructionsText;
+}
+
+function attackCell(attackedPlayer, coordinates, domCells) {
+  attackedPlayer.playerBoard.receiveHit(coordinates);
+  const computerBoard = translateIndeciesToBoard(attackedPlayer.shipLocations);
+
+  renderComputerGameBoard(computerBoard, domCells);
+
+  if (
+    humanPlayer.playerBoard.locations.length == 0 ||
+    computerPlayer.playerBoard.locations.length == 0
+  ) {
+    decideFinalModalTextContent(
+      humanPlayer.isWinner() ? humanPlayer : computerPlayer
+    );
+    revealFinalResultModal();
+  }
+  alternatePlayerBoards();
 }
 
 function decideFinalModalTextContent(winner) {
@@ -438,16 +626,95 @@ function decideFinalModalTextContent(winner) {
 
   let playerIsWinner = "You win!";
   let resultDescription =
-    "And your opponent reels! Keep it up, and you may become a great future admiral";
+    "And your opponent reels! Keep it up, at this pace, you may just become a great future admiral for the nation!";
 
   if (winner.hasOwnProperty(makeAIhit)) {
     playerIsWinner = "You lose!";
     resultDescription =
-      "Defeat? DEFEAT!?!? You better get back in the ring straight away! Lest the enemy gain an advantage...";
+      "Defeat? DEFEAT!?!? You better get back in the ring straight away! Lest the enemy navy gain a strategic advantage...";
   }
 
   finalModalTitle.textContent = playerIsWinner;
   finalModalDescription.textContent = resultDescription;
 }
 
-export { createHeader };
+document.addEventListener("DOMContentLoaded", () => {
+  const startSelection = document.querySelector(".start-game-button");
+  const preGameDomCells = document.querySelectorAll(".preGame-boardCell");
+  const randomShipButton = document.querySelector(
+    ".random-selection-board-button"
+  );
+  const startButton = document.querySelector(
+    ".start-Game-selection-board-button"
+  );
+  const resetSelection = document.querySelector(
+    ".reset-selection-board-button"
+  );
+  const selectionCells = document.querySelectorAll(
+    ".selection-battleShip-gameBoard > .preGame-boardCell"
+  );
+  const computerPlayerBoardCells = document.querySelectorAll(
+    ".computer-active-playerBoard > .activeGame-boardCell"
+  );
+  const playAgainButton = document.querySelector(".play-again-button-modal");
+  const mainMenu = document.querySelector(".main-menu-button-modal");
+
+  startSelection.addEventListener("click", revealPregameBoard);
+
+  preGameDomCells.forEach((preGameDomCell) => {
+    preGameDomCell.addEventListener("click", placePlayerShip);
+  });
+
+  randomShipButton.addEventListener("click", () => {
+    placeRandomShips(humanPlayer);
+  });
+  startButton.addEventListener("click", () => {
+    startGame(humanPlayer);
+  });
+
+  resetSelection.addEventListener("click", () => {
+    resetSelectionBoard(humanPlayer);
+  });
+
+  computerPlayerBoardCells.forEach((computerPlayerBoardCell) => {
+    computerPlayerBoardCell.addEventListener("click", (event) => {
+      const shipPlacementCoordinates = event.target.dataset.coordinates;
+      attackCell(
+        computerPlayer,
+        shipPlacementCoordinates,
+        computerPlayerBoardCells
+      );
+    });
+  });
+
+  selectionCells.forEach((selectionCell) => {
+    selectionCell.addEventListener("click", (event) => {
+      const shipPlacementCoordinates = event.target.dataset.coordinates;
+      placePlayerShip(humanPlayer, shipPlacementCoordinates, selectionCells);
+    });
+    selectionCell.addEventListener("mouseover", (event) => {
+      const shipPlacementCoordinates = event.target.dataset.coordinates;
+      highlightShipSquares(
+        humanPlayer,
+        shipPlacementCoordinates,
+        selectionCells
+      );
+    });
+  });
+
+  playAgainButton.addEventListener("click", () => {
+    playAgain();
+  });
+  mainMenu.addEventListener("click", () => {
+    revealStartSection();
+  });
+});
+export {
+  createHeader,
+  createIntroModal,
+  createSelectionGameContainer,
+  createActiveGameBoard,
+  createGameResultModal,
+  createMain,
+  createFooter,
+};
