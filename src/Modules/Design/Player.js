@@ -1,7 +1,7 @@
 import { battleShip } from "../Design/battleShip";
 import { gameBoard } from "../Design/gameBoard";
 
-export function player() {
+function player() {
   const playerBoard = gameBoard();
   const rotations = ["Vertical", "Horizontal"];
   const placeShipManager = placeShipManagerFactory();
@@ -216,6 +216,11 @@ export function player() {
     };
   }
 
+  function resetPlayerSettings() {
+    placeShipManager = placeShipManagerFactory();
+    playerBoard.resetBoardSettings();
+  }
+
   return {
     isWinner,
     placeShipsRandomly,
@@ -224,7 +229,13 @@ export function player() {
     hitSquare,
     placeShipManagerFactory,
     placeShipRandomly,
+    resetPlayerSettings,
     playerBoard,
     placeShipManager,
   };
 }
+
+const humanPlayer = player();
+const computerPlayer = player().Computer();
+
+export { player, humanPlayer, computerPlayer };
