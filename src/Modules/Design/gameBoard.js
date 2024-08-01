@@ -101,6 +101,8 @@ export function gameBoard() {
 
   function placeShip(ship, coordinates, rotation) {
     const shipLength = ship.getLength();
+    if (shipLength == undefined) return;
+
     if (isSpaciousSquare(coordinates, shipLength, rotation)) {
       shipLocations.push({
         coordinates,
@@ -160,6 +162,20 @@ export function gameBoard() {
     return shipsAvailable == 0;
   }
 
+  function resetBoardSettings() {
+    Board = [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ];
+    shipLocations = [];
+    hitSquares = [];
+    missedSquares = [];
+
+    shipsAvailable = 5;
+  }
+
   return {
     placeShip,
     receiveHit,
@@ -170,6 +186,7 @@ export function gameBoard() {
     get_neighbors,
     returnShipOccupiedSquares,
     getItemAtCoords,
+    resetBoardSettings,
     shipLocations,
     Board,
   };
