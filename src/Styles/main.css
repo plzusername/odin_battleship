@@ -1,5 +1,6 @@
 @import url('./header/header.css');
 @import url('./introMoal/introModal.css');
+@import url('./footer/footer.css');
 
 *{
     margin: 0;
