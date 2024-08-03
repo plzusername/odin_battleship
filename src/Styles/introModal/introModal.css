@@ -1,0 +1,65 @@
+@import url('./introModal-variables.css');
+@import url(https://fonts.googleapis.com/css?family=Anton:regular);
+
+.modal-container{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    box-shadow: 0px 0px 4px 2px rgba(187, 185, 185, 0.75);
+    border-radius: var(--introModal-border-radius);
+    margin: var(--introModal-margin);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: var(--introModal-max-width);
+    height: 100%;
+    background-color: #f5f5f5;
+
+}
+
+.preview-image-container{
+    /* Put the image in assets */
+
+    border-radius: var(--introModal-border-radius) var(--introModal-border-radius) 0px 0px;
+    background-image: url('https://wallpaperaccess.com/full/4382410.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width:100%;
+    height: 100%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: var(--title-gap);
+    align-content: flex-start;
+    justify-content: flex-end;
+    padding: var(--game-title-padding);
+}
+
+.game-description{
+    margin:var(--game-description-margin);
+    font-size: var(--game-description-font-size);
+    line-height: var(--game-description-line-height);
+}
+
+.preview-header{
+    font-family: 'Anton';
+    font-size: var(--game-description-font-size-title);
+    letter-spacing: var(--game-description-letter-spacing-title);
+}
+
+.start-game-button{
+    border: none;
+    background-color: var(--start-game-button-background-color);
+    margin-bottom: var(--start-game-button-margin);
+    padding: var(--start-game-button-padding);
+    color: #f5f5f5;
+    border-radius: var(--start-game-button-border-radius);
+    font-size: var(--start-game-button-font-size);
+    font-weight: bold;
+    transition: 370ms ease-in-out;
+
+}
+
+.start-game-button:hover{
+    background-color: var(--start-game-hover-background-color);
+    cursor: pointer;
+}
