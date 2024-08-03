@@ -4,7 +4,7 @@ import { gameBoard } from "../Design/gameBoard";
 function player() {
   const playerBoard = gameBoard();
   const rotations = ["Vertical", "Horizontal"];
-  const placeShipManager = placeShipManagerFactory();
+  let placeShipManager = placeShipManagerFactory();
 
   function isWinner(opponent) {
     return opponent.playerBoard.allShipsSunken();
@@ -124,7 +124,16 @@ function player() {
       shipIndex++;
       return shipLengths[shipIndex];
     }
-    return { toggleRotation, getCurrentShip, moveToNextShip };
+
+    function getCurrentRotation() {
+      return rotation;
+    }
+    return {
+      toggleRotation,
+      getCurrentShip,
+      moveToNextShip,
+      getCurrentRotation,
+    };
   }
 
   function hitSquare(coordinates, opponent) {
