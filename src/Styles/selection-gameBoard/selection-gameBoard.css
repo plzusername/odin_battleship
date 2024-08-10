@@ -24,6 +24,8 @@
 }
 
 .preGame-boardCell{
+    display: grid;
+    place-items: center;
     background-color: var(--board-cell-color);
     outline: var(--board-cell-outline) solid whitesmoke;
     width: min(5vw,5vh);
@@ -44,4 +46,39 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.buttons-selection-section{
+    display: flex;
+    gap:var(--buttons-section-gap);
+
+}
+
+.buttons-selection-section > * {
+    background-color: var(--buttons-section-color);
+    font-size: var(--buttons-section-size);
+    padding:var(--buttons-section-padding);
+    border-radius: var(--buttons-section-border-radius);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 350ms ease-in;
+}
+
+.fa-ship{
+    font-size: var(--placed-ship-size);
+    color: var(--placed-ship-color);
+}
+
+.buttons-selection-section > *:hover {
+    background-color: black;
+}
+
+.valid-hover-placement{
+    background-color: var(--valid-hover);
+}
+
+.invalid-hover-placement{
+    background-color: var(--invalid-hover);
 }

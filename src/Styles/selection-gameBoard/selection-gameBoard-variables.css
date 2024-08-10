@@ -5,9 +5,19 @@
     --selection-board-padding:min(2.4vw, 2.4vh);
     --selection-board-border-radius:8px;
     --selection-board-margin:24px;
-    --board-cell-color:#e4e6f1;
+    --board-cell-color:#c5cae9;
     --board-cell-outline:2px;
     --board-cell-dimensions:5px;
     --selection-color:#305acb;
     --game-instruction-header-width:80%;
+    --invalid-hover:#c34a4a;
+    --valid-hover:#00cae4;
+    --buttons-section-gap:12px;
+    --buttons-section-color:#305acb;
+    --buttons-section-size:20px;
+    --buttons-section-padding:12px 24px;
+    --buttons-section-border-radius:8px;
+    --placed-ship-color:#305acb;
+    --placed-ship-size:24px;
+
 }
