@@ -19,7 +19,7 @@ export function gameBoard() {
     const shipOccupiedSquares = [];
 
     for (let i = 0; i < shipLength; i++) {
-      shipOccupiedSquares.push(coordinates + i * increment);
+      shipOccupiedSquares.push(+coordinates + i * increment);
     }
 
     return shipOccupiedSquares;
@@ -75,15 +75,20 @@ export function gameBoard() {
         (neighborSquare) =>
           neighborSquare > -1 &&
           neighborSquare < 100 &&
-          Math.abs((neighborSquare % 10) - (squareIndex % 10) <= 1)
+          Math.abs((neighborSquare % 10) - (squareIndex % 10)) <= 1
       );
   }
 
   function isSpaciousSquare(coordinates, shipLength, rotation) {
+    coordinates = parseInt(coordinates);
+
     if (
-      ((coordinates % 10) + shipLength > 10 && rotation == "Horizontal") ||
-      (Math.floor(coordinates / 10) + shipLength > 10 && rotation == "Vertical")
+      rotation == "Vertical" &&
+      Math.floor(coordinates / 10) + shipLength > 10
     ) {
+      return false;
+    }
+    if (rotation == "Horizontal" && (coordinates % 10) + shipLength > 10) {
       return false;
     }
 
@@ -187,7 +192,8 @@ export function gameBoard() {
     returnShipOccupiedSquares,
     getItemAtCoords,
     resetBoardSettings,
-    shipLocations,
-    Board,
+    get shipLocations() {
+      return shipLocations;
+    },
   };
 }

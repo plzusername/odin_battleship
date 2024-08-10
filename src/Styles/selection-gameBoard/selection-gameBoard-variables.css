@@ -1,0 +1,13 @@
+:root{
+    --game-instruction-header-size:48px;
+    --game-instruction-description-size:20px;
+    --selection-section-margin:12px;
+    --selection-board-padding:min(2.4vw, 2.4vh);
+    --selection-board-border-radius:8px;
+    --selection-board-margin:24px;
+    --board-cell-color:#e4e6f1;
+    --board-cell-outline:2px;
+    --board-cell-dimensions:5px;
+    --selection-color:#305acb;
+    --game-instruction-header-width:80%;
+}

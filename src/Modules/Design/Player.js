@@ -20,12 +20,18 @@ function player() {
   }
 
   function remove_from_possibilities(board, squares) {
-    let board_clone = board;
+    let board_clone = [...board];
     let squares_index = 0;
-    for (let i = 0; i < board_clone.length; i++) {
-      while (board_clone[i] > squares[squares_index]) squares_index++;
 
-      if (board_clone[i] == squares[squares_index]) {
+    for (let i = 0; i < board_clone.length; i++) {
+      while (
+        squares_index < squares.length &&
+        board_clone[i] > squares[squares_index]
+      ) {
+        squares_index++;
+      }
+
+      if (board_clone[i] === squares[squares_index]) {
         board_clone.splice(i, 1);
         i--;
         squares_index++;
@@ -42,11 +48,11 @@ function player() {
 
     const board_reference = currentBoard.filter((square) => {
       let isolatedShip = true;
-      let withinBoardBounds =
-        (square + ship.getLength() - 1) % 10 > ship.getLength() - 1;
+
+      let withinBoardBounds = (square % 10) + ship.getLength() < 10;
 
       if (rotation == "Vertical") {
-        withinBoardBounds = Math.floor(square / 10) + ship.getLength() <= 10;
+        withinBoardBounds = Math.floor(square / 10) + ship.getLength() < 10;
       }
 
       const increment = rotation == "Vertical" ? 10 : 1;
@@ -81,14 +87,16 @@ function player() {
     placeShipRandomly(
       battleShip(placeShipManager.getCurrentShip()),
       remove_from_possibilities(
-        currentBoard,
+        currentBoard.sort((a, b) => a - b),
         occupied_squares.sort((a, b) => a - b)
       )
     );
   }
 
   function placeShipsRandomly() {
-    let possible_possitions = playerBoard.Board.map((square, index) => index);
+    let possible_possitions = new Array(100)
+      .fill(0)
+      .map((square, index) => index);
     const warShip = battleShip(placeShipManager.getCurrentShip());
 
     placeShipRandomly(warShip, possible_possitions);
@@ -226,7 +234,9 @@ function player() {
   }
 
   function resetPlayerSettings() {
-    placeShipManager = placeShipManagerFactory();
+    const getPlaceShipManager = () => placeShipManagerFactory();
+
+    placeShipManager = getPlaceShipManager();
     playerBoard.resetBoardSettings();
   }
 
@@ -240,7 +250,9 @@ function player() {
     placeShipRandomly,
     resetPlayerSettings,
     playerBoard,
-    placeShipManager,
+    get placeShipManager() {
+      return placeShipManager;
+    },
   };
 }
 
