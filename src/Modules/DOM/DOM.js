@@ -180,12 +180,12 @@ function placePlayerShip(player, coordinates, domCells) {
   const selectionInstructions = document.querySelector(
     ".game-instructions-details"
   );
-  const targetedDomCell = domCells[coordinates];
 
   const placementManager = player.placeShipManager;
   const placementRotation = placementManager.getCurrentRotation();
   const currentShipLength = placementManager.getCurrentShip();
   const currentBattleShip = battleShip(currentShipLength);
+  const shipAmount = player.playerBoard.shipLocations.length;
   const spaciousSquare = player.playerBoard.isSpaciousSquare(
     coordinates,
     currentShipLength,
@@ -202,7 +202,7 @@ function placePlayerShip(player, coordinates, domCells) {
     []
   );
 
-  if (player.placeShipManager.getCurrentShip() != currentShipLength) {
+  if (shipAmount != player.playerBoard.shipLocations.length) {
     BoardRendering.renderGameboard(
       board,
       domCells,
