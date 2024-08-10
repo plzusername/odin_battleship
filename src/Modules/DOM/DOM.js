@@ -180,19 +180,19 @@ function placePlayerShip(player, coordinates, domCells) {
   const selectionInstructions = document.querySelector(
     ".game-instructions-details"
   );
+  const targetedDomCell = domCells[coordinates];
 
   const placementManager = player.placeShipManager;
   const placementRotation = placementManager.getCurrentRotation();
   const currentShipLength = placementManager.getCurrentShip();
   const currentBattleShip = battleShip(currentShipLength);
+  const spaciousSquare = player.playerBoard.isSpaciousSquare(
+    coordinates,
+    currentShipLength,
+    placementRotation
+  );
 
-  if (
-    player.playerBoard.isSpaciousSquare(
-      coordinates,
-      currentShipLength,
-      placementRotation
-    )
-  ) {
+  if (spaciousSquare) {
     player.addShip(currentBattleShip, coordinates, placementRotation);
   }
 
@@ -202,12 +202,16 @@ function placePlayerShip(player, coordinates, domCells) {
     []
   );
 
-  BoardRendering.renderGameboard(
-    board,
-    domCells,
-    player.playerBoard,
-    "preGame-boardCell"
-  );
+  if (player.placeShipManager.getCurrentShip() != currentShipLength) {
+    BoardRendering.renderGameboard(
+      board,
+      domCells,
+      player.playerBoard,
+      "preGame-boardCell"
+    );
+  }
+
+  highlightShipSquares(player, coordinates, domCells);
 
   let selectionInstructionsText = `Place your ${placementManager.getCurrentShip()}x ships, Note: you can right click to toggle ship placement rotation`;
 
