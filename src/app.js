@@ -1,4 +1,5 @@
-import * as DOM from "./Modules/DOM/DOM";
+import * as DOM from "./Modules/DOM/DOM-setup";
+import "./Modules/DOM/DOM";
 import "./Styles/main.css";
 
 const body = document.body;
