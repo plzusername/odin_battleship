@@ -1,6 +1,7 @@
 @import url('./header/header.css');
-@import url('./introMoal/introModal.css');
+@import url('./introModal/introModal.css');
 @import url('./footer/footer.css');
+@import url('./selection-gameBoard/selection-gameBoard.css');
 
 *{
     margin: 0;
