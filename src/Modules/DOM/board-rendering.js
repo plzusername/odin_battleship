@@ -22,8 +22,7 @@ const applyShipPresentStyles = (domCell) => {
   const battleShip = createElement(
     "img",
     {
-      class: "battleShip-cell-icon",
-      src: "/home/linux_user/repos/odin_battleship/src/Assets/ship-svgrepo-com.sv",
+      class: "fa-solid fa-ship",
     },
     [],
     ""
