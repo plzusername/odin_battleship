@@ -6,8 +6,11 @@ describe("test for valid computer ship placements", () => {
   const computerPlayer = player().Computer();
 
   test("computer should place ships as to not overflow out of the board or come in contact with other warships", () => {
-    computerPlayer.placeShipsRandomly();
-    expect(computerPlayer.playerBoard.shipLocations.length).toEqual(5);
+    for (let i = 0; i < 10; i++) {
+      const computerPlayer = player().Computer();
+      computerPlayer.placeShipsRandomly();
+      expect(computerPlayer.playerBoard.shipLocations.length).toBe(5);
+    }
   });
 });
 
