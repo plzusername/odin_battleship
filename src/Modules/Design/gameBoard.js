@@ -1,10 +1,4 @@
 export function gameBoard() {
-  let Board = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  ];
   let shipLocations = [];
   let hitSquares = [];
   let missedSquares = [];
@@ -25,14 +19,28 @@ export function gameBoard() {
     return shipOccupiedSquares;
   }
 
-  function returnShipAtCoords(coordinates) {
+  function returnTargetSquares() {
+    return new Array(100)
+      .fill(null)
+      .map((value, index) => index)
+      .filter(
+        (value) =>
+          !(hitSquares.includes(value) || missedSquares.includes(value))
+      );
+  }
+
+  function returnShipLocationAtCoords(coordinates) {
     for (let i = 0; i < shipLocations.length; i++) {
       const shipLocation = shipLocations[i];
 
       if (shipLocation.occupiedSquares.includes(coordinates)) {
-        return shipLocation.ship;
+        return shipLocation;
       }
     }
+  }
+
+  function returnShipAtCoords(coordinates) {
+    return returnShipLocationAtCoords(coordinates).ship;
   }
 
   function getItemAtCoords(coordinates) {
@@ -59,9 +67,6 @@ export function gameBoard() {
     return get_neighbors(squareIndex).filter((neighborSquares) => {
       return returnCoordinatesAreShip(neighborSquares);
     });
-  }
-  function isObject(val) {
-    return val != null && val.constructor.name === "Object";
   }
 
   function get_neighbors(squareIndex) {
@@ -159,8 +164,12 @@ export function gameBoard() {
       getItemAtCoords(coordinates) === -1
     )
       return "Invalid hit";
-    if (isObject(getItemAtCoords(coordinates))) return "Valid hit";
+    if (returnCoordinatesAreShip(coordinates)) return "Valid hit";
     if (getItemAtCoords(coordinates) === 0) return "Valid hit, empty square";
+  }
+
+  function shipIsSunken(coordinates) {
+    return returnShipLocationAtCoords(coordinates).occupiedSquares.length == 0;
   }
 
   function allShipsSunken() {
@@ -168,12 +177,6 @@ export function gameBoard() {
   }
 
   function resetBoardSettings() {
-    Board = [
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ];
     shipLocations = [];
     hitSquares = [];
     missedSquares = [];
@@ -192,8 +195,17 @@ export function gameBoard() {
     returnShipOccupiedSquares,
     getItemAtCoords,
     resetBoardSettings,
+    shipIsSunken,
+    returnCoordinatesAreShip,
+    returnTargetSquares,
     get shipLocations() {
       return shipLocations;
+    },
+    get hitSquares() {
+      return hitSquares;
+    },
+    get missedSquares() {
+      return missedSquares;
     },
   };
 }
