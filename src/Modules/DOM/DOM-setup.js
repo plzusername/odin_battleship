@@ -244,15 +244,51 @@ const createActiveGameBoard = (titleText, classes) => {
     gameBoardTitleTextNode
   );
 
+  const activeCellsContainer = createElement(
+    "div",
+    { class: "active-cells-container" },
+    [...createCells("activeGame-boardCell")],
+    ""
+  );
+
   const gameBoard = createElement(
     "div",
     { class: classes },
-    [gameBoardTitle, ...createCells("activeGame-boardCell")],
+    [gameBoardTitle, activeCellsContainer],
     ""
   );
 
   return gameBoard;
 };
+
+function createBoardConatiner() {
+  const humanBoard = createActiveGameBoard(
+    "And Hold!",
+    "human-active-playerBoard"
+  );
+
+  const computerBoard = createActiveGameBoard(
+    "Bombard!",
+    "computer-active-playerBoard"
+  );
+
+  const flipper3D = createElement(
+    "div",
+    { class: "active-board-flipper" },
+    [humanBoard, computerBoard],
+    ""
+  );
+
+  const boardContainer = createElement(
+    "div",
+    { class: "active-board-container" },
+    [flipper3D],
+    ""
+  );
+
+  return boardContainer;
+}
+
 const createGameResultModal = () => {
   const gameResultTitleTextNode = "You win!";
   const gameResultDescriptionTextNode =
@@ -310,5 +346,6 @@ export {
   createFooter,
   createActiveGameBoard,
   createMain,
+  createBoardConatiner,
   createCells,
 };
