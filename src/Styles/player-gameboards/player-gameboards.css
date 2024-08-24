@@ -1,0 +1,85 @@
+@import url(https://fonts.googleapis.com/css?family=Anton:regular);
+@import url('./player-gameboards-variables.css');
+
+
+.active-board-container {
+    perspective: 1000px;
+    width: calc(min(60vw, 60vh) + 16px + 22px + 1px); 
+    height: min(73vw, 73vh); 
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.active-board-flipper {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    width: 100%;
+    height: 100%;
+}
+
+.computer-active-playerBoard, .human-active-playerBoard {
+    backface-visibility: hidden;
+    padding: var(--active-board-padding);
+    background-color: var(--active-board-color);
+    border-radius: var(--active-board-radius);
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.75);
+    position: absolute;
+    justify-self: center;
+}
+
+.computer-active-playerBoard {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.human-active-playerBoard {
+    transform: rotateY(180deg);
+}
+
+.active-board-container.flipped .active-board-flipper {
+    transform: rotateY(180deg);
+}
+
+.active-gameboard-title {
+    color: var(--active-title-color);
+    margin-bottom: var(--active-title-margin);
+    font-size: var(--active-title-size);
+    font-family: 'Anton';
+}
+
+.activeGame-boardCell {
+    width: min(6vw, 6vh);
+    height: min(6vh, 6vw);
+    background-color: var(--active-board-cell-color);
+    outline: 2px solid white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active-cells-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: min(60vw, 60vh);
+    height: min(60vw, 60vh);
+}
+
+.hit-ship{
+    color: white;
+    font-size: var(--ship-impact-size);
+}
+
+.cell-hit{
+    background-color: var(--hit-square-color);
+}
+
+.empty-cell-hit{
+    background-color: var(--empty-hit-square-color);
+}

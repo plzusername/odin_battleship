@@ -1,0 +1,14 @@
+:root{
+    --active-title-margin:20px;
+    --active-title-color:#f9f871;
+    --active-title-size:28px;
+    --active-board-padding:20px;
+    --active-board-margin:40px;
+    --active-board-color:#305acb;
+    --active-board-cell-color:#c5cae9;
+    --active-board-radius:12px;
+    --ship-impact-size:24px;
+    --hit-square-color:#c34a4a;
+    --empty-hit-square-color:#305acb;
+
+}
