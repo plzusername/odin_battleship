@@ -7,14 +7,19 @@ function isObject(objValue) {
 }
 
 const applyAttackedCellStyles = (domCell) => {
-  const hitIcon = createElement("i", { class: "fa-solid fa-burst" }, [], "");
+  const hitIcon = createElement(
+    "img",
+    { class: "fa-solid fa-certificate hit-ship" },
+    [],
+    ""
+  );
   domCell.removeAttribute("class");
+  domCell.classList.add("activeGame-boardCell");
   domCell.appendChild(hitIcon);
   domCell.classList.add("cell-hit");
 };
 
 const applyEmptyHitCellStyles = (domCell) => {
-  domCell.removeAttribute("class");
   domCell.classList.add("empty-cell-hit");
 };
 
@@ -50,8 +55,9 @@ function getNeighboringSquares(cellIndex, shipGameBoard) {
 
 function getOccupiedSquares(neighboringSquares, shipGameBoard) {
   const occupied_squares = [];
+
   neighboringSquares.forEach((neighboringSquare) => {
-    if (isObject(shipGameBoard.getItemAtCoords(neighboringSquare))) {
+    if (returnCoordinatesAreShip(neighboringSquare)) {
       occupied_squares.push(neighboringSquare);
     }
   });
@@ -59,36 +65,49 @@ function getOccupiedSquares(neighboringSquares, shipGameBoard) {
   return occupied_squares;
 }
 
-const applySunkenShipStyles = (shipGameBoard, domCell) => {
-  const domCellIndex = domCell.dataset.coordinates;
+const getSunkenNeighborSquares = (shipGameBoard, domCell) => {
+  const domCellIndex = +domCell.dataset.coordinates;
   const neighboringSquares = getNeighboringSquares(domCellIndex, shipGameBoard);
   const occupiedSquares = getOccupiedSquares(neighboringSquares, shipGameBoard);
 
-  neighboringSquares.forEach((neighboringSquare) => {
-    const neighboringDomCell = domCell.closest(
-      `[data-coordinates=${neighboringSquare}]`
-    );
+  return { neighboringSquares, occupiedSquares };
+};
 
-    neighboringDomCell.removeAttribute("class");
-    neighboringDomCell.classList.add("empty-cell-hit");
+const applyNeighborStyles = (domCell, neighborSquareIndex) => {
+  const neighboringDomCell = domCell.closest(
+    `[data-coordinates=${neighborSquareIndex}]`
+  );
+
+  neighboringDomCell.classList.add("empty-cell-hit");
+};
+
+const applyOccupiedStyles = (domCell, occupiedSquareIndex) => {
+  const occupiedDomCell = domCell.closest(
+    `[data-coordinates=${occupiedSquareIndex}]`
+  );
+
+  const sunkenShip = createElement(
+    "img",
+    {
+      class: "sunken-ship-icon",
+      src: "../../Assets/sink-svgrepo-com.svg",
+    },
+    [],
+    ""
+  );
+
+  occupiedDomCell.appendChild(sunkenShip);
+};
+
+const applySunkenShipStyles = (shipGameBoard, domCell) => {
+  const squaresToBeStyled = getSunkenNeighborSquares(shipGameBoard, domCell);
+
+  squaresToBeStyled.neighboringSquares.forEach((neighboringSquare) => {
+    applyNeighborStyles(domCell, neighboringSquare);
   });
 
-  occupiedSquares.forEach((occupiedSquare) => {
-    const occupiedDomCell = domCell.closest(
-      `[data-coordinates=${occupiedSquare}]`
-    );
-
-    const sunkenShip = createElement(
-      "img",
-      {
-        class: "sunken-ship-icon",
-        src: "../../Assets/sink-svgrepo-com.svg",
-      },
-      [],
-      ""
-    );
-
-    occupiedDomCell.appendChild(sunkenShip);
+  squaresToBeStyled.occupiedSquares.forEach((occupiedSquare) => {
+    applyOccupiedStyles(domCell, occupiedSquare);
   });
 };
 
@@ -102,8 +121,19 @@ function applyHitCellStyles(cell, domCell) {
 }
 
 function applyNonShipCellStyles(cell, domCell, gameBoard) {
-  applySunkenShipStyles(gameBoard, domCell);
-  applyHitCellStyles(cell, domCell);
+  const coordinates = +domCell.dataset.coordinates;
+
+  if (
+    gameBoard.returnCoordinatesAreShip(coordinates) &&
+    gameBoard.shipIsSunken(coordinates)
+  ) {
+    applySunkenShipStyles(gameBoard, domCell);
+    return;
+  }
+
+  if (cell == -1 || cell == "X") {
+    applyHitCellStyles(cell, domCell);
+  }
 }
 
 function applyCellStyles(cell, domCell, gameBoard) {
@@ -111,6 +141,7 @@ function applyCellStyles(cell, domCell, gameBoard) {
     applyShipPresentStyles(domCell);
     return;
   }
+
   applyNonShipCellStyles(cell, domCell, gameBoard);
 }
 
@@ -133,7 +164,7 @@ function translateIndeciesToBoard(shipLocations, hitSquares, missSquares) {
   return board;
 }
 
-function renderGameboard(Board, domBoardCells, gameBoard, boardTypeClass) {
+function renderGameboard(Board, domBoardCells, gameBoard) {
   domBoardCells.forEach((domBoardCell) => {
     const originClass = domBoardCell.classList.value.split(" ")[0];
 
@@ -148,6 +179,15 @@ function renderGameboard(Board, domBoardCells, gameBoard, boardTypeClass) {
 }
 
 function renderComputerGameBoard(Board, domBoardCells, gameBoard) {
+  domBoardCells.forEach((domBoardCell) => {
+    const originClass = domBoardCell.classList.value.split(" ")[0];
+
+    domBoardCell.removeAttribute("class");
+    domBoardCell.classList.add(originClass);
+
+    domBoardCell.replaceChildren();
+  });
+
   Board.forEach((cell, index) => {
     applyNonShipCellStyles(cell, domBoardCells[index], gameBoard);
   });
