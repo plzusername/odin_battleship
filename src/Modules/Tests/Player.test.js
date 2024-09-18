@@ -32,6 +32,17 @@ describe("test for intelligient hit behaviour from the computer", () => {
     computerPlayer.makeAIhit(humanPlayer.playerBoard);
     expect(humanPlayer.playerBoard.allShipsSunken()).toBe(true);
   });
+
+  test("Computer should rotate hit direction when in contact with hit square", () => {
+    humanPlayer.addShip(humanBattleShip, 61, "Horizontal");
+    computerPlayer.makeHit(66, humanPlayer.playerBoard);
+    computerPlayer.makeHit(63, humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    computerPlayer.makeAIhit(humanPlayer.playerBoard);
+    expect(computerPlayer.makeAIhit(humanPlayer.playerBoard)).toBe("Valid hit");
+  });
 });
 
 describe("Should determine victor from two competing players", () => {
