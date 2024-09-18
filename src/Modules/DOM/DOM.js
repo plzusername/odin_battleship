@@ -2,6 +2,10 @@ import { battleShip } from "../Design/battleShip";
 import { humanPlayer, computerPlayer } from "../Design/Player";
 import * as BoardRendering from "./board-rendering";
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function applyHoverStyles(domCell, validPlacementSquare) {
   if (validPlacementSquare) {
     domCell.classList.add("valid-hover-placement");
@@ -12,14 +16,6 @@ function applyHoverStyles(domCell, validPlacementSquare) {
     domCell.classList.add("invalid-hover-placement");
     domCell.classList.remove("valid-hover-placement");
   }
-}
-
-function alternatePlayerBoards() {
-  const humanPlayerBoard = document.querySelector(".human-active-board");
-  const computerPlayerBoard = document.querySelector(".computer-active-board");
-
-  humanPlayerBoard.classList.toggle("active-board");
-  computerPlayerBoard.classList.toggle("active-board");
 }
 
 function toggleOverlayVisibility() {
@@ -104,12 +100,26 @@ function resetSelectionBoard(player) {
 }
 
 function startGame(player) {
-  const activeGameBoard = document.querySelector(
-    ".active-battleShip-gameBoard"
+  const activeGameBoard = document.querySelector(".active-board-container");
+  const humanCells = document.querySelectorAll(
+    ".human-active-playerBoard .activeGame-boardCell"
   );
 
   if (player.playerBoard.shipLocations.length == 5) {
+    const humanBoard = BoardRendering.translateIndeciesToBoard(
+      humanPlayer.playerBoard.shipLocations,
+      [],
+      []
+    );
+    computerPlayer.placeShipsRandomly();
+    // computerPlayer.addShip(battleShip(1), 1, "Horizontal");
+
     activateSection(activeGameBoard);
+    BoardRendering.renderGameboard(
+      humanBoard,
+      humanCells,
+      humanPlayer.playerBoard
+    );
   }
 }
 
@@ -118,20 +128,15 @@ function placeRandomShips(player) {
   const shipInstructions = document.querySelector(".game-instructions-details");
 
   player.resetPlayerSettings();
-
   player.placeShipsRandomly();
+
   const board = BoardRendering.translateIndeciesToBoard(
     player.playerBoard.shipLocations,
     [],
     []
   );
 
-  BoardRendering.renderGameboard(
-    board,
-    preGameBoardCells,
-    player.playerBoard,
-    "preGame-boardCell"
-  );
+  BoardRendering.renderGameboard(board, preGameBoardCells, player.playerBoard);
 
   shipInstructions.textContent = `Ready for battle? Press the start button with all your naval might!`;
 }
@@ -154,11 +159,11 @@ function highlightShipSquares(player, startSquare, domBoardCells) {
   let atEdge = false;
 
   for (let i = 0; i < currentShipLength && !atEdge; i += 1) {
-    if (bordersEdge(parseInt(startSquare) + i * increment, placementRotation)) {
+    if (bordersEdge(startSquare + i * increment, placementRotation)) {
       atEdge = true;
     }
 
-    const hoveredIndex = parseInt(startSquare) + i * increment;
+    const hoveredIndex = startSquare + i * increment;
     const domCell = domBoardCells[hoveredIndex];
 
     applyHoverStyles(
@@ -221,31 +226,51 @@ function placePlayerShip(player, coordinates, domCells) {
   selectionInstructions.textContent = selectionInstructionsText;
 }
 
+function revealFinalModal() {
+  if (
+    humanPlayer.playerBoard.shipLocations.length == 0 ||
+    computerPlayer.playerBoard.shipLocations.length == 0
+  ) {
+    decideFinalModalTextContent(
+      humanPlayer.isWinner(computerPlayer) ? humanPlayer : computerPlayer
+    );
+    revealFinalResultModal();
+  }
+}
+
 function attackCell(attackedPlayer, coordinates, domCells) {
   attackedPlayer.playerBoard.receiveHit(coordinates);
+
   const computerBoard = BoardRendering.translateIndeciesToBoard(
-    attackedPlayer.shipLocations,
-    [],
-    []
+    attackedPlayer.playerBoard.shipLocations,
+    attackedPlayer.playerBoard.hitSquares,
+    attackedPlayer.playerBoard.missedSquares
   );
 
   BoardRendering.renderComputerGameBoard(
     computerBoard,
     domCells,
-    attackedPlayer.playerBoard,
-    "activeGame-boardCell"
+    attackedPlayer.playerBoard
   );
 
-  if (
-    humanPlayer.playerBoard.locations.length == 0 ||
-    computerPlayer.playerBoard.locations.length == 0
-  ) {
-    decideFinalModalTextContent(
-      humanPlayer.isWinner() ? humanPlayer : computerPlayer
-    );
-    revealFinalResultModal();
-  }
-  alternatePlayerBoards();
+  revealFinalModal();
+}
+function computerAttack(targetPlayer, domCells) {
+  computerPlayer.makeComputerHit(targetPlayer.playerBoard);
+
+  const humanBoard = BoardRendering.translateIndeciesToBoard(
+    targetPlayer.playerBoard.shipLocations,
+    targetPlayer.playerBoard.hitSquares,
+    targetPlayer.playerBoard.missedSquares
+  );
+
+  BoardRendering.renderGameboard(
+    humanBoard,
+    domCells,
+    targetPlayer.playerBoard
+  );
+
+  revealFinalModal();
 }
 
 function decideFinalModalTextContent(winner) {
@@ -258,7 +283,7 @@ function decideFinalModalTextContent(winner) {
   let resultDescription =
     "And your opponent reels! Keep it up, at this pace, you may just become a great future admiral for the nation!";
 
-  if (winner.hasOwnProperty(makeAIhit)) {
+  if (winner.hasOwnProperty("makeAIhit")) {
     playerIsWinner = "You lose!";
     resultDescription =
       "Defeat? DEFEAT!?!? You better get back in the ring straight away! Lest the enemy navy gain a strategic advantage...";
@@ -283,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ".selection-battleShip-gameBoard > .preGame-boardCell"
   );
   const computerPlayerBoardCells = document.querySelectorAll(
-    ".computer-active-playerBoard > .activeGame-boardCell"
+    ".computer-active-playerBoard  .activeGame-boardCell"
   );
   const playAgainButton = document.querySelector(".play-again-button-modal");
   const mainMenu = document.querySelector(".main-menu-button-modal");
@@ -300,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
 
       const shipPlacementCoordinates =
-        event.target.closest(".preGame-boardCell").dataset.coordinates;
+        +event.target.closest(".preGame-boardCell").dataset.coordinates;
 
       selectionCells.forEach((selectionCell) => {
         selectionCell.classList.remove("invalid-hover-placement");
@@ -333,24 +358,53 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   computerPlayerBoardCells.forEach((computerPlayerBoardCell) => {
-    computerPlayerBoardCell.addEventListener("click", (event) => {
-      const shipPlacementCoordinates = event.target.dataset.coordinates;
-      attackCell(
-        computerPlayer,
-        shipPlacementCoordinates,
-        computerPlayerBoardCells
+    computerPlayerBoardCell.addEventListener("click", async (event) => {
+      const shipAttackCoordinates = +event.target.dataset.coordinates;
+      const boardsContainer = document.querySelector(".active-board-container");
+      const computerBoardCells = document.querySelectorAll(
+        ".computer-active-playerBoard  .activeGame-boardCell"
       );
+      const humanBoardCells = document.querySelectorAll(
+        ".human-active-playerBoard  .activeGame-boardCell"
+      );
+
+      const humanHitShip = computerPlayer.playerBoard.returnCoordinatesAreShip(
+        shipAttackCoordinates
+      );
+      let computerHitShip = true;
+
+      const delayTime = 1250;
+
+      attackCell(computerPlayer, shipAttackCoordinates, computerBoardCells);
+
+      if (humanHitShip) {
+        return;
+      }
+
+      boardsContainer.classList.toggle("flipped");
+
+      await sleep(delayTime);
+
+      while (computerHitShip) {
+        computerAttack(humanPlayer, humanBoardCells);
+
+        computerHitShip = computerPlayer.currentComputerHitSquareContent;
+
+        await sleep(delayTime - 150);
+      }
+
+      boardsContainer.classList.toggle("flipped");
     });
   });
 
   selectionCells.forEach((selectionCell) => {
     selectionCell.addEventListener("click", (event) => {
-      const shipPlacementCoordinates = event.target.dataset.coordinates;
+      const shipPlacementCoordinates = +event.target.dataset.coordinates;
       placePlayerShip(humanPlayer, shipPlacementCoordinates, selectionCells);
     });
     selectionCell.addEventListener("mouseover", (event) => {
       const shipPlacementCoordinates =
-        event.target.closest(".preGame-boardCell").dataset.coordinates;
+        +event.target.closest(".preGame-boardCell").dataset.coordinates;
       highlightShipSquares(
         humanPlayer,
         shipPlacementCoordinates,
