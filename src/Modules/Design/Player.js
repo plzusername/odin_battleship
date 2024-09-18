@@ -156,11 +156,14 @@ function player() {
     let ships_hit = 1;
     let anchor_square_neighbors = [];
 
+    let currentComputerHitSquare = null;
+    let currentComputerHitSquareContent = null;
+
     function saveHitSquare(coords, opponentBoard) {
       anchor_square = coords;
       current_searching_square = anchor_square;
       is_AI_activated = true;
-      anchor_square_neighbors = [10, -10, 1, -1].filter(
+      anchor_square_neighbors = [-10, 10, 1, -1].filter(
         (square) =>
           square + anchor_square > -1 &&
           square + anchor_square < 100 &&
@@ -172,6 +175,11 @@ function player() {
       if (opponentBoard.validHit(coords) == "Valid hit") {
         saveHitSquare(coords, opponentBoard);
       }
+
+      currentComputerHitSquare = coords;
+      currentComputerHitSquareContent = opponentBoard.getItemAtCoords(
+        currentComputerHitSquare
+      );
       opponentBoard.receiveHit(coords);
 
       return opponentBoard.validHit(coords);
@@ -181,80 +189,57 @@ function player() {
       current_searching_square +=
         anchor_square_neighbors[neighboring_squares_index];
 
+      currentComputerHitSquare = current_searching_square;
+
       const hit_validity = opponentBoard.validHit(current_searching_square);
       const hit_item = opponentBoard.getItemAtCoords(current_searching_square);
+
+      const nextHitCoords =
+        current_searching_square +
+        anchor_square_neighbors[neighboring_squares_index];
+
+      const next_hit_item = opponentBoard.getItemAtCoords(nextHitCoords);
 
       const itemIsShip = opponentBoard.returnCoordinatesAreShip(
         current_searching_square
       );
       const itemIsEmpty = hit_item === 0;
+      const nextItemIsUnavailable =
+        next_hit_item === -1 || nextHitCoords > 99 || nextHitCoords < 0;
 
-      console.log(hit_item);
+      currentComputerHitSquareContent = opponentBoard.getItemAtCoords(
+        currentComputerHitSquare
+      );
 
       opponentBoard.receiveHit(current_searching_square);
 
       if (itemIsShip) {
-        console.log("IS a darn ship");
         ships_hit++;
       }
 
       if (itemIsEmpty && ships_hit === 1) {
-        console.log("Change search square");
         neighboring_squares_index++;
         current_searching_square = anchor_square;
 
         return hit_validity;
       }
-      if (itemIsEmpty && ships_hit > 1) {
-        console.log("rotate");
+      if ((itemIsEmpty || nextItemIsUnavailable) && ships_hit > 1) {
         current_searching_square = anchor_square;
         neighboring_squares_index = anchor_square_neighbors.indexOf(
-          neighboring_squares_index * -1
+          anchor_square_neighbors[neighboring_squares_index] * -1
         );
       }
 
       if (itemIsShip && hit_item.isSunk()) {
-        console.log("ggs");
         is_AI_activated = false;
         anchor_square = null;
         current_searching_square = null;
         anchor_square_neighbors = [];
-        ships_hit = 0;
+        ships_hit = 1;
         neighboring_squares_index = 0;
 
         return hit_validity;
       }
-      // const current_searched_square =
-      // anchorSquareNeighbors[neighboring_squares_index];
-      // anchorSquare += current_searched_square;
-      // opponentBoard.receiveHit(anchorSquare);
-      // console.log(anchorSquare);
-      // if (hit_validity == "Valid hit") {
-      //   ships_hit++;
-      // }
-      // if (
-      //   hit_validity == "Valid hit" &&
-      //   opponentBoard.getItemAtCoords(anchorSquare).isSunk()
-      // ) {
-      //   anchorSquare = -1;
-      //   neighboring_squares_index = 0;
-      //   rotation_decided = false;
-      //   return hit_validity;
-      // }
-      // if (hit_validity == "Valid hit, empty square" && rotation_decided) {
-      //   neighboring_squares_index = anchorSquareNeighbors.indexOf(
-      //     current_searched_square * -1
-      //   );
-      //   anchorSquare -= current_searched_square * ships_hit;
-      // }
-      // if (hit_validity == "Valid hit, empty square" && !rotation_decided) {
-      //   neighboring_squares_index++;
-      //   anchorSquare -= current_searched_square;
-      // }
-      // if (hit_validity == "Valid hit" && ships_hit > 1) {
-      //   rotation_decided = true;
-      //   anchorSquare += current_searched_square;
-      // }
       return hit_validity;
     }
 
@@ -275,6 +260,12 @@ function player() {
       makeHit,
       makeAIhit,
       makeComputerHit,
+      get currentComputerHitSquare() {
+        return currentComputerHitSquare;
+      },
+      get currentComputerHitSquareContent() {
+        return currentComputerHitSquareContent;
+      },
     };
   }
 
