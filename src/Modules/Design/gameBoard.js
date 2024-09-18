@@ -39,8 +39,34 @@ export function gameBoard() {
     }
   }
 
+  function returnPreviousShipAtCoords(coordinates) {
+    for (let i = 0; i < shipLocations.length; i++) {
+      const shipLocation = shipLocations[i];
+
+      if (shipLocation.origSquares.includes(coordinates)) {
+        return shipLocation;
+      }
+    }
+  }
+
   function returnShipAtCoords(coordinates) {
     return returnShipLocationAtCoords(coordinates).ship;
+  }
+
+  function returnShipSquaresAtCoords(coordinates) {
+    return returnPreviousShipAtCoords(coordinates).origSquares;
+  }
+
+  function returnCoordinatesWereNeighbor(coordinates) {
+    const neighboringSquares = get_neighbors(coordinates);
+
+    for (let i = 0; i < neighboringSquares.length; i++) {
+      if (returnPreviousShipAtCoords(neighboringSquares[i]) != undefined) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   function getItemAtCoords(coordinates) {
@@ -123,6 +149,11 @@ export function gameBoard() {
           shipLength,
           rotation
         ),
+        origSquares: returnShipOccupiedSquares(
+          coordinates,
+          shipLength,
+          rotation
+        ),
         ship,
       });
       shipsAvailable++;
@@ -169,7 +200,7 @@ export function gameBoard() {
   }
 
   function shipIsSunken(coordinates) {
-    return returnShipLocationAtCoords(coordinates).occupiedSquares.length == 0;
+    return returnPreviousShipAtCoords(coordinates).occupiedSquares.length == 0;
   }
 
   function allShipsSunken() {
@@ -197,7 +228,10 @@ export function gameBoard() {
     resetBoardSettings,
     shipIsSunken,
     returnCoordinatesAreShip,
+    returnPreviousShipAtCoords,
     returnTargetSquares,
+    returnShipSquaresAtCoords,
+    returnCoordinatesWereNeighbor,
     get shipLocations() {
       return shipLocations;
     },
