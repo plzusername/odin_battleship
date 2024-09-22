@@ -61,7 +61,12 @@ export function gameBoard() {
     const neighboringSquares = get_neighbors(coordinates);
 
     for (let i = 0; i < neighboringSquares.length; i++) {
-      if (returnPreviousShipAtCoords(neighboringSquares[i]) != undefined) {
+      const neighboringSquare = neighboringSquares[i];
+
+      if (
+        hitSquares.includes(neighboringSquare) &&
+        returnPreviousShipAtCoords(neighboringSquare).ship.isSunk()
+      ) {
         return true;
       }
     }
