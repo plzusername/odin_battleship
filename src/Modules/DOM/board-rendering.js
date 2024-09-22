@@ -48,7 +48,7 @@ const applyOccupiedStyles = (domCell) => {
     "img",
     {
       class: "sunken-ship-icon",
-      src: "../../Assets/sink-svgrepo-com.svg",
+      src: "/home/linux_user/repos/odin_battleship/src/Assets/sink-svgrepo-com.svg",
     },
     [],
     ""
@@ -85,6 +85,7 @@ function applyNonShipCellStyles(cell, domCell, gameBoard) {
 
   if (cell == -1 || cell == "X") {
     applyHitCellStyles(cell, domCell);
+    return;
   }
 }
 
