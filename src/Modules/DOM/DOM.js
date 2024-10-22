@@ -111,8 +111,8 @@ function startGame(player) {
       [],
       []
     );
-    computerPlayer.placeShipsRandomly();
-    // computerPlayer.addShip(battleShip(1), 1, "Horizontal");
+    // computerPlayer.placeShipsRandomly();
+    computerPlayer.addShip(battleShip(1), 0, "Vertical");
 
     activateSection(activeGameBoard);
     BoardRendering.renderGameboard(
@@ -360,6 +360,18 @@ document.addEventListener("DOMContentLoaded", () => {
   computerPlayerBoardCells.forEach((computerPlayerBoardCell) => {
     computerPlayerBoardCell.addEventListener("click", async (event) => {
       const shipAttackCoordinates = +event.target.dataset.coordinates;
+
+      if (event.currentTarget != event.target) {
+        return;
+      }
+      if (
+        computerPlayer.playerBoard.validHit(shipAttackCoordinates) ==
+        "Invalid hit"
+      ) {
+        return;
+      }
+
+      // Seperation of Identical IF statements for better visualisation of logical flow
       const boardsContainer = document.querySelector(".active-board-container");
       const computerBoardCells = document.querySelectorAll(
         ".computer-active-playerBoard  .activeGame-boardCell"
@@ -394,6 +406,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       boardsContainer.classList.toggle("flipped");
+    });
+  });
+  computerPlayerBoardCells.forEach((computerPlayerBoardCell) => {
+    computerPlayerBoardCell.addEventListener("mouseover", (event) => {
+      const hoveredCell = event.target.closest(".activeGame-boardCell");
+      if (hoveredCell.className.split(" ").length == 1) {
+        hoveredCell.classList.add("valid-hit-square");
+      }
+    });
+    computerPlayerBoardCell.addEventListener("mouseleave", () => {
+      computerPlayerBoardCells.forEach((selectionCell) => {
+        selectionCell.classList.remove("valid-hit-square");
+      });
     });
   });
 
