@@ -83,3 +83,10 @@
 .empty-cell-hit{
     background-color: var(--empty-hit-square-color);
 }
+.neighboring-square{
+    background-color: var(--empty-hit-square-color);
+}
+
+.valid-hit-square{
+    background-color: var(--valid-hover);
+}
