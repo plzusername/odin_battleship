@@ -35,29 +35,6 @@ const applyShipPresentStyles = (domCell) => {
   domCell.appendChild(battleShip);
 };
 
-function getIsNeighborSquare(coordinates, gameBoard) {
-  return gameBoard.returnCoordinatesWereNeighbor(coordinates);
-}
-
-const applyNeighborStyles = (domCell) => {
-  domCell.classList.add("neighboring-square");
-};
-
-const applyOccupiedStyles = (domCell) => {
-  const sunkenShip = createElement(
-    "img",
-    {
-      class: "sunken-ship-icon",
-      src: "/home/linux_user/repos/odin_battleship/src/Assets/sink-svgrepo-com.svg",
-    },
-    [],
-    ""
-  );
-
-  domCell.classList.add("occupied-square");
-  domCell.appendChild(sunkenShip);
-};
-
 function applyHitCellStyles(cell, domCell) {
   if (cell == -1) {
     applyEmptyHitCellStyles(domCell);
@@ -75,11 +52,6 @@ function applyNonShipCellStyles(cell, domCell, gameBoard) {
     gameBoard.shipIsSunken(coordinates)
   ) {
     applyOccupiedStyles(domCell);
-    return;
-  }
-
-  if (getIsNeighborSquare(coordinates, gameBoard)) {
-    applyNeighborStyles(domCell);
     return;
   }
 
@@ -109,8 +81,8 @@ function translateIndeciesToBoard(shipLocations, hitSquares, missSquares) {
   });
 
   shipLocations.forEach((shipLocation) => {
-    shipLocation.occupiedSquares.forEach((occupiedSquaree) => {
-      board[occupiedSquaree] = {};
+    shipLocation.occupiedSquares.forEach((occupiedSquare) => {
+      board[occupiedSquare] = {};
     });
   });
 
