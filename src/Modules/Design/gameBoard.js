@@ -115,6 +115,12 @@ export function gameBoard() {
       );
   }
 
+  function get_border_squares(coordinates) {
+    return returnShipSquaresAtCoords(coordinates)
+      .map((square) => get_neighbors(square))
+      .flat();
+  }
+
   function isSpaciousSquare(coordinates, shipLength, rotation) {
     coordinates = parseInt(coordinates);
 
@@ -174,8 +180,12 @@ export function gameBoard() {
 
     if (returnCoordinatesAreShip(coordinates)) {
       returnShipAtCoords(coordinates).receiveHit();
-      if (returnShipAtCoords(coordinates).isSunk()) shipsAvailable -= 1;
+      if (returnShipAtCoords(coordinates).isSunk()) {
+        const border_squares = get_border_squares(coordinates);
 
+        border_squares.forEach((border_square) => receiveHit(border_square));
+        shipsAvailable -= 1;
+      }
       hitSquares.push(coordinates);
 
       shipLocations.forEach((shipLocation) => {
