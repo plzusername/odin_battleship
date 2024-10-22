@@ -27,3 +27,7 @@ header{
 .logo-container > h2{
     letter-spacing: var(--title-letter-spacing);
 }
+
+.logo-container .fa-ship{
+    color: white;
+}
