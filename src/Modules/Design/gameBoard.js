@@ -99,6 +99,11 @@ export function gameBoard() {
       return returnCoordinatesAreShip(neighborSquares);
     });
   }
+  function get_empty_neighbors(squareIndex) {
+    return get_neighbors(squareIndex).filter((neighborSquares) => {
+      return !returnCoordinatesAreShip(neighborSquares);
+    });
+  }
 
   function get_neighbors(squareIndex) {
     const neighboring_squares = [-10, 10, 11, -11, 9, -9, 1, -1];
@@ -117,8 +122,9 @@ export function gameBoard() {
 
   function get_border_squares(coordinates) {
     return returnShipSquaresAtCoords(coordinates)
-      .map((square) => get_neighbors(square))
-      .flat();
+      .map((square) => get_empty_neighbors(square))
+      .flat()
+      .filter((element, index, array) => array.indexOf(element) === index);
   }
 
   function isSpaciousSquare(coordinates, shipLength, rotation) {
@@ -178,12 +184,14 @@ export function gameBoard() {
   function receiveHit(coordinates) {
     const validity_of_hit = validHit(coordinates);
 
+    if (validity_of_hit == "Invalid hit") return;
+
     if (returnCoordinatesAreShip(coordinates)) {
       returnShipAtCoords(coordinates).receiveHit();
       if (returnShipAtCoords(coordinates).isSunk()) {
         const border_squares = get_border_squares(coordinates);
-
         border_squares.forEach((border_square) => receiveHit(border_square));
+
         shipsAvailable -= 1;
       }
       hitSquares.push(coordinates);
