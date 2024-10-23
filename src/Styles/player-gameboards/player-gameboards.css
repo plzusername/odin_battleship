@@ -90,3 +90,12 @@
 .valid-hit-square{
     background-color: var(--valid-hover);
 }
+
+.occupied-square{
+    background-color: var(--empty-hit-square-color);
+}
+
+.sunken-ship-icon{
+    font-weight: bold;
+    font-size: var(--sunken-ship-size);
+}
