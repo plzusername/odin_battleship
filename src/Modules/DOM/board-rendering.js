@@ -35,6 +35,20 @@ const applyShipPresentStyles = (domCell) => {
   domCell.appendChild(battleShip);
 };
 
+const applyOccupiedStyles = (domCell) => {
+  const sunkenShip = createElement(
+    "i",
+    {
+      class: "sunken-ship-icon fa-solid fa-anchor-circle-xmark",
+    },
+    [],
+    ""
+  );
+
+  domCell.classList.add("occupied-square");
+  domCell.appendChild(sunkenShip);
+};
+
 function applyHitCellStyles(cell, domCell) {
   if (cell == -1) {
     applyEmptyHitCellStyles(domCell);
