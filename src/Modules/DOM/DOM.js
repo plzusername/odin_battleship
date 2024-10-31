@@ -227,9 +227,15 @@ function placePlayerShip(player, coordinates, domCells) {
 }
 
 function revealFinalModal() {
+  const shipAmount = 5;
+
   if (
-    humanPlayer.playerBoard.shipLocations.length == 0 ||
-    computerPlayer.playerBoard.shipLocations.length == 0
+    humanPlayer.playerBoard.shipLocations.filter(
+      (shipLocation) => shipLocation.occupiedSquares.length == 0
+    ).length == shipAmount ||
+    computerPlayer.playerBoard.shipLocations.filter(
+      (shipLocation) => shipLocation.occupiedSquares.length == 0
+    ).length == shipAmount
   ) {
     decideFinalModalTextContent(
       humanPlayer.isWinner(computerPlayer) ? humanPlayer : computerPlayer
@@ -371,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Seperation of Identical IF statements for better visualisation of logical flow
+      // Seperation of Identical IF statement results for better visualisation of logical flow
       const boardsContainer = document.querySelector(".active-board-container");
       const computerBoardCells = document.querySelectorAll(
         ".computer-active-playerBoard  .activeGame-boardCell"
