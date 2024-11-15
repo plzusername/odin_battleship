@@ -49,27 +49,86 @@ function restartPlayerSettings() {
   computerPlayer.resetPlayerSettings();
 }
 
+function renderBoards() {
+  const humanGameBoardCells = document.querySelectorAll(
+    ".human-active-playerBoard .active-cells-container > *"
+  );
+  const humanSelectionCells = document.querySelectorAll(
+    ".selection-battleShip-gameBoard > *"
+  );
+  const computerGameBoardCells = document.querySelectorAll(
+    ".computer-active-playerBoard .active-cells-container > *"
+  );
+
+  const humanGameBoard = humanPlayer.playerBoard;
+  const computerGameBoard = computerPlayer.playerBoard;
+
+  const humanBoard = BoardRendering.translateIndeciesToBoard(
+    humanGameBoard.shipLocations,
+    humanGameBoard.hitSquares,
+    humanGameBoard.missedSquares
+  );
+  const computerBoard = BoardRendering.translateIndeciesToBoard(
+    computerGameBoard.shipLocations,
+    computerGameBoard.hitSquares,
+    computerGameBoard.missedSquares
+  );
+
+  BoardRendering.renderGameboard(
+    humanBoard,
+    humanSelectionCells,
+    humanGameBoard
+  );
+  BoardRendering.renderGameboard(
+    humanBoard,
+    humanGameBoardCells,
+    humanGameBoard
+  );
+
+  BoardRendering.renderComputerGameBoard(
+    computerBoard,
+    computerGameBoardCells,
+    computerGameBoard
+  );
+}
+
 function revealStartSection() {
   const startSection = document.querySelector(".modal-container");
 
   activateSection(startSection);
-  restartPlayerSettings();
   toggleOverlayVisibility();
+
+  restartPlayerSettings();
+  renderBoards();
 }
 
 function playAgain() {
-  const humanPlayerBoard = document.querySelector(".human-player-board");
-  const computerPlayerBoard = document.querySelector(".computer-player-board");
+  const humanPlayerBoardCells = document.querySelectorAll(
+    ".human-active-playerBoard > .active-cells-container > *"
+  );
+  const computerPlayerBoardCells = document.querySelectorAll(
+    ".computer-active-playerBoard > .active-cells-container > *"
+  );
 
   const humanBoard = BoardRendering.translateIndeciesToBoard([], [], []);
   const computerBoard = BoardRendering.translateIndeciesToBoard([], [], []);
 
-  BoardRendering.renderGameboard(humanBoard, humanPlayerBoard);
-  BoardRendering.renderGameboard(computerBoard, computerPlayerBoard);
+  BoardRendering.renderGameboard(
+    humanBoard,
+    humanPlayerBoardCells,
+    humanPlayer.playerBoard
+  );
+  BoardRendering.renderComputerGameBoard(
+    computerBoard,
+    computerPlayerBoardCells,
+    computerPlayer.playerBoard
+  );
 
   revealPregameBoard();
-  restartPlayerSettings();
   toggleOverlayVisibility();
+
+  restartPlayerSettings();
+  renderBoards();
 }
 
 function revealPregameBoard() {
@@ -226,25 +285,31 @@ function placePlayerShip(player, coordinates, domCells) {
   selectionInstructions.textContent = selectionInstructionsText;
 }
 
-function revealFinalModal() {
-  const shipAmount = 5;
+function checkForWinner() {
+  const necessary_destroyed_ships = 5;
 
-  if (
-    humanPlayer.playerBoard.shipLocations.filter(
-      (shipLocation) => shipLocation.occupiedSquares.length == 0
-    ).length == shipAmount ||
+  const destroyed_human_ships = humanPlayer.playerBoard.shipLocations.filter(
+    (shipLocation) => shipLocation.occupiedSquares.length == 0
+  );
+  const destroyed_computer_ships =
     computerPlayer.playerBoard.shipLocations.filter(
       (shipLocation) => shipLocation.occupiedSquares.length == 0
-    ).length == shipAmount
-  ) {
-    decideFinalModalTextContent(
-      humanPlayer.isWinner(computerPlayer) ? humanPlayer : computerPlayer
     );
-    revealFinalResultModal();
-  }
+
+  return (
+    destroyed_human_ships.length === necessary_destroyed_ships ||
+    destroyed_computer_ships.length === 1
+  );
 }
 
-function attackCell(attackedPlayer, coordinates, domCells) {
+function revealFinalModal() {
+  decideFinalModalTextContent(
+    humanPlayer.isWinner(computerPlayer) ? humanPlayer : computerPlayer
+  );
+  revealFinalResultModal();
+}
+
+function humanAttack(attackedPlayer, coordinates, domCells) {
   attackedPlayer.playerBoard.receiveHit(coordinates);
 
   const computerBoard = BoardRendering.translateIndeciesToBoard(
@@ -259,7 +324,9 @@ function attackCell(attackedPlayer, coordinates, domCells) {
     attackedPlayer.playerBoard
   );
 
-  revealFinalModal();
+  if (checkForWinner()) {
+    revealFinalModal();
+  }
 }
 function computerAttack(targetPlayer, domCells) {
   computerPlayer.makeComputerHit(targetPlayer.playerBoard);
@@ -276,7 +343,9 @@ function computerAttack(targetPlayer, domCells) {
     targetPlayer.playerBoard
   );
 
-  revealFinalModal();
+  if (checkForWinner()) {
+    revealFinalModal();
+  }
 }
 
 function decideFinalModalTextContent(winner) {
@@ -393,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const delayTime = 1250;
 
-      attackCell(computerPlayer, shipAttackCoordinates, computerBoardCells);
+      humanAttack(computerPlayer, shipAttackCoordinates, computerBoardCells);
 
       if (humanHitShip) {
         return;
