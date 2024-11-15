@@ -45,6 +45,12 @@ const createMain = () => {
   return main_body;
 };
 
+const createOverlay = () => {
+  const overlay = createElement("div", { class: "overlay" }, [], "");
+
+  return overlay;
+};
+
 const createIntroModal = () => {
   const descriptionTextNode = `This action packed thriller game is full of anything and everything that ww2 history nerds and board game lovers alike would enjoy. A game in which you must skillfully target your opponents warships, it truly makes even the most hardened of navy veterans hop in their seats! With everything at stake, will you be able to masterfully coordinate your fleet to defeat your enemy, or will you get your naval forces pummeled by a superier enemy, find out Now!`;
   const startGameButtonTextNode = "Start Game";
@@ -346,6 +352,7 @@ export {
   createFooter,
   createActiveGameBoard,
   createMain,
+  createOverlay,
   createBoardConatiner,
   createCells,
 };
