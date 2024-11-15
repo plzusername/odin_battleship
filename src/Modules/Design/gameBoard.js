@@ -2,7 +2,6 @@ export function gameBoard() {
   let shipLocations = [];
   let hitSquares = [];
   let missedSquares = [];
-  let shipsAvailable = 0;
 
   function getRotationIncrement(rotation) {
     return rotation == "Vertical" ? 10 : 1;
@@ -173,7 +172,6 @@ export function gameBoard() {
         ),
         ship,
       });
-      shipsAvailable++;
 
       return "Valid placement";
     }
@@ -184,15 +182,13 @@ export function gameBoard() {
   function receiveHit(coordinates) {
     const validity_of_hit = validHit(coordinates);
 
-    if (validity_of_hit == "Invalid hit") return;
+    if (validity_of_hit === "Invalid hit") return;
 
     if (returnCoordinatesAreShip(coordinates)) {
       returnShipAtCoords(coordinates).receiveHit();
       if (returnShipAtCoords(coordinates).isSunk()) {
         const border_squares = get_border_squares(coordinates);
         border_squares.forEach((border_square) => receiveHit(border_square));
-
-        shipsAvailable -= 1;
       }
       hitSquares.push(coordinates);
 
@@ -205,7 +201,7 @@ export function gameBoard() {
         }
       });
     }
-    if (getItemAtCoords(coordinates) == 0) {
+    if (getItemAtCoords(coordinates) === 0) {
       missedSquares.push(coordinates);
     }
 
@@ -223,19 +219,21 @@ export function gameBoard() {
   }
 
   function shipIsSunken(coordinates) {
-    return returnPreviousShipAtCoords(coordinates).occupiedSquares.length == 0;
+    return returnPreviousShipAtCoords(coordinates).occupiedSquares.length === 0;
   }
 
   function allShipsSunken() {
-    return shipsAvailable == 0;
+    const emptyShips = shipLocations.filter(
+      (shipLocation) => shipLocation.occupiedSquares.length === 0
+    );
+
+    return emptyShips.length === shipLocations.length;
   }
 
   function resetBoardSettings() {
     shipLocations = [];
     hitSquares = [];
     missedSquares = [];
-
-    shipsAvailable = 5;
   }
 
   return {
