@@ -3,6 +3,7 @@
 @import url('./footer/footer.css');
 @import url('./selection-gameBoard/selection-gameBoard.css');
 @import url('./player-gameboards/player-gameboards.css');
+@import url('./final-modal/final-modal.css');
 
 *{
     margin: 0;
