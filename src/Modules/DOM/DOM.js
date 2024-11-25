@@ -92,6 +92,13 @@ function renderBoards() {
   );
 }
 
+function resetInstructionsText() {
+  const instructionText = document.querySelector(".game-instructions-details");
+
+  instructionText.textContent =
+    "Place your 5x ships, Note: you can right click to toggle ship placement rotation";
+}
+
 function revealStartSection() {
   const startSection = document.querySelector(".modal-container");
 
@@ -100,35 +107,18 @@ function revealStartSection() {
 
   restartPlayerSettings();
   renderBoards();
+
+  resetInstructionsText();
 }
 
 function playAgain() {
-  const humanPlayerBoardCells = document.querySelectorAll(
-    ".human-active-playerBoard > .active-cells-container > *"
-  );
-  const computerPlayerBoardCells = document.querySelectorAll(
-    ".computer-active-playerBoard > .active-cells-container > *"
-  );
-
-  const humanBoard = BoardRendering.translateIndeciesToBoard([], [], []);
-  const computerBoard = BoardRendering.translateIndeciesToBoard([], [], []);
-
-  BoardRendering.renderGameboard(
-    humanBoard,
-    humanPlayerBoardCells,
-    humanPlayer.playerBoard
-  );
-  BoardRendering.renderComputerGameBoard(
-    computerBoard,
-    computerPlayerBoardCells,
-    computerPlayer.playerBoard
-  );
-
   revealPregameBoard();
   toggleOverlayVisibility();
 
   restartPlayerSettings();
   renderBoards();
+
+  resetInstructionsText();
 }
 
 function revealPregameBoard() {
@@ -280,7 +270,7 @@ function placePlayerShip(player, coordinates, domCells) {
   let selectionInstructionsText = `Place your ${placementManager.getCurrentShip()}x ships, Note: you can right click to toggle ship placement rotation`;
 
   if (placementManager.getCurrentShip() == undefined) {
-    selectionInstructionsText = `Ready for battle? Make sure to press the start button!`;
+    selectionInstructionsText = `Ready for battle? Press the start button with all your naval might!`;
   }
   selectionInstructions.textContent = selectionInstructionsText;
 }
