@@ -160,8 +160,8 @@ function startGame(player) {
       [],
       []
     );
-    // computerPlayer.placeShipsRandomly();
-    computerPlayer.addShip(battleShip(1), 0, "Vertical");
+    computerPlayer.placeShipsRandomly();
+    // computerPlayer.addShip(battleShip(1), 0, "Vertical");
 
     activateSection(activeGameBoard);
     BoardRendering.renderGameboard(
