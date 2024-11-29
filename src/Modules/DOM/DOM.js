@@ -289,7 +289,7 @@ function checkForWinner() {
 
   return (
     destroyed_human_ships.length === necessary_destroyed_ships ||
-    destroyed_computer_ships.length === 1
+    destroyed_computer_ships.length === necessary_destroyed_ships
   );
 }
 
