@@ -227,6 +227,7 @@ function highlightShipSquares(player, startSquare, domBoardCells) {
 }
 
 function placePlayerShip(player, coordinates, domCells) {
+  console.log("Placed");
   if (player.playerBoard.shipLocations.length == 5) {
     return;
   }
@@ -489,6 +490,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   selectionCells.forEach((selectionCell) => {
     selectionCell.addEventListener("click", (event) => {
+      if (event.currentTarget != event.target) {
+        return;
+      }
+
       const shipPlacementCoordinates = +event.target.dataset.coordinates;
       placePlayerShip(humanPlayer, shipPlacementCoordinates, selectionCells);
     });
